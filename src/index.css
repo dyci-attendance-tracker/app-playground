@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+@theme {
+  --bg-mint-500: oklch(0.72 0.11 178);
+}
+
+#root {
+  height: 100vh;
+  width: 100%;
+  text-align: center;
+  background-color: var(--primary);
+  color: var(--text-color);
+}
+
+/* ---------- Root Theme Variables ---------- */
+:root {
+  --primary: #191A23;
+
+  --secondary: #16161C;
+
+  --overlay: #23242F ;
+
+  --accent: #575BC7;
+
+  --accent-hover: #6D78D5;
+
+  --text-color: #ffffff;
+
+  --text-color-secondary: #B0B0B0;
+
+  --button-color: oklch(37.3% 0.034 259.733);
+  /* bg-gray-700 */
+
+  --hover-color: oklch(37.3% 0.034 259.733);
+  /* bg-gray-700 */
+
+  --border-color: oklch(55.1% 0.027 264.364);
+  /* bg-gray-500 */
+
+  --error: #FF4D4D;
+
+  --success: #4CAF50;
+
+  --warning: #FF9800;
+
+  --info: #2196F3;
+
+}
+
+/* ---------- Dark Theme Overrides ---------- */
+.light-theme {
+  --primary: #FCFCFC;
+
+  --secondary: #F5F5F5;
+
+  --overlay: #ff000f;
+
+  --accent: #6D78D5;
+
+  --text-color: #303446;
+
+  --text-color-secondary: #6D6D6D;
+
+  --error: #FF4D4D;
+
+  --success: #4CAF50;
+
+  --warning: #FF9800;
+
+  --info: #2196F3;
+}
+
+/* ---------- Utility Classes ---------- */
+
+/* Primary */
+.primary     { background-color: var(--primary); }
+
+/* Secondary */
+.secondary     { background-color: var(--secondary); }
+
+/* Overlay */
+.overlay { background-color: var(--overlay) !important; }
+
+/* Accent */
+.accent-bg     { background-color: var(--accent); }
+.accent-bg:hover { background-color: var(--accent-hover); }
+.accent-text { color: var(--accent); }
+
+/* Text and Background Colors */
+.text-color { color: var(--text-color)!important; }
+.text-color-secondary { color: var(--text-color-secondary); }
+.text-error { color: var(--error); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-info { color: var(--info); }
+
+/* Button */
+.button-color { background-color: var(--button-color)!important; }
+.button-color:hover { background-color: var(--hover-color)!important; }
+
+/* Borders */
+.border-color { border-color: var(--border-color)!important; }
+.border-color:lg { border-color: var(--border-color)!important; }
+
+/* Error */
+.error-bg       { background-color: var(--error); color: var(--text-color); }
+.error-text     { color: var(--error); }
+
+/* Success */
+.success-bg     { background-color: var(--success); color: var(--text-color); }
+.success-text   { color: var(--success); }
+
+/* Warning */
+.warning-bg     { background-color: var(--warning); color: var(--text-color); }
+.warning-text   { color: var(--warning); }
+
+/* Info */
+.info-bg       { background-color: var(--info); color: var(--text-color); }
+.info-text     { color: var(--info); }
+
+/* Add to your global CSS */
+.fixed-center {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(200%, -50%) !important;
+}
