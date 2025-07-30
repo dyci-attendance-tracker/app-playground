@@ -26,6 +26,12 @@ import EventView from './features/events/components/EventView.jsx';
 import EventViewAll from './features/events/components/EventViewAll.jsx';
 import RouteInit from './routes/RouteInit.jsx';
 import { Toaster } from 'sonner';
+import Onboarding from './features/onboarding/Onboarding.jsx';
+import OnboardingStep1 from './features/onboarding/components/OnboardingStep1.jsx';
+import OnboardingStep2 from './features/onboarding/components/OnboardingStep2.jsx';
+import OnboardingStep3 from './features/onboarding/components/OnboardingStep3.jsx';
+import { OnboardingProvider } from './contexts/OnboardingContext.jsx';
+import RedirectToOnboardingStep from './routes/RedirectToOnboardingStep.jsx';
 
 const router = createBrowserRouter([
   {
@@ -88,6 +94,24 @@ const router = createBrowserRouter([
         path: "*", // Catch-all route (404)
         element: <NotFound />,
       },
+      {
+        path: "onboarding/",
+        element: <ProtectedRoute><Onboarding /></ProtectedRoute>,
+        children: [
+          {
+          path: "step/1",
+          element: <ProtectedRoute><OnboardingStep1 /></ProtectedRoute>,
+          },
+          {
+          path: "step/2",
+          element: <ProtectedRoute><OnboardingStep2 /></ProtectedRoute>,
+          },
+          {
+          path: "step/3",
+          element: <ProtectedRoute><OnboardingStep3 /></ProtectedRoute>,
+          },
+        ]
+      }
     ]
   }
 ]);
@@ -103,23 +127,25 @@ function App() {
   return (
     <LoaderProvider>
       <AuthProvider>
-        <WorkspaceProvider>
-          <SidebarProvider>
-            <div className='App primary'>
-                <Toaster toastOptions={{
-                  classNames: {
-                    toast: 'overlay !border-gray-600',
-                    title: 'text-color',
-                    description: 'text-color',
-                    icon: 'text-color',
-                  },
-                }}/>
-              <RouterProvider router={router} />
-              {/* <RouteInit /> */}
-              <RouteChangeLoader />
-            </div>
-          </SidebarProvider>
-        </WorkspaceProvider>
+        <OnboardingProvider>
+          <WorkspaceProvider>
+            <SidebarProvider>
+              <div className='App primary'>
+                  <Toaster toastOptions={{
+                    classNames: {
+                      toast: 'overlay !border-gray-600',
+                      title: 'text-color',
+                      description: 'text-color',
+                      icon: 'text-color',
+                    },
+                  }}/>
+                <RouterProvider router={router} />
+                {/* <RouteInit /> */}
+                <RouteChangeLoader />
+              </div>
+            </SidebarProvider>
+          </WorkspaceProvider>
+        </OnboardingProvider>
       </AuthProvider>
     </LoaderProvider>
   );

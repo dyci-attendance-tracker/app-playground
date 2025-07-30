@@ -37,7 +37,7 @@ export default function Signup() {
 
         try {
         await signup(formData.email, formData.password);
-        navigate("/workspace/onboarding");
+        navigate("/onboarding/step/1");
         } catch (err) {
         console.error("Signup error:", err);
         setError(err.message || "Failed to create account");
@@ -52,7 +52,7 @@ export default function Signup() {
 
         try {
         await signInWithGoogle();
-        navigate("/workspace/onboarding");
+        navigate("/onboarding/step/1");
         } catch (err) {
         console.error("Google sign-in error:", err);
         setError(err.message || "Google sign-in failed");
