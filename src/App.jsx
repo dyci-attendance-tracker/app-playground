@@ -32,6 +32,7 @@ import OnboardingStep2 from './features/onboarding/components/OnboardingStep2.js
 import OnboardingStep3 from './features/onboarding/components/OnboardingStep3.jsx';
 import { OnboardingProvider } from './contexts/OnboardingContext.jsx';
 import RedirectToOnboardingStep from './routes/RedirectToOnboardingStep.jsx';
+import { EventProvider } from './contexts/EventContext.jsx';
 
 const router = createBrowserRouter([
   {
@@ -79,7 +80,7 @@ const router = createBrowserRouter([
                 element: <ProtectedRoute><EventViewAll /></ProtectedRoute>
               },
               {
-                path: ":projectID",
+                path: ":eventID",
                 element: <ProtectedRoute><EventView /></ProtectedRoute>
               }
             ]
@@ -129,21 +130,23 @@ function App() {
       <AuthProvider>
         <OnboardingProvider>
           <WorkspaceProvider>
-            <SidebarProvider>
-              <div className='App primary'>
-                  <Toaster toastOptions={{
-                    classNames: {
-                      toast: 'overlay !border-gray-600',
-                      title: 'text-color',
-                      description: 'text-color',
-                      icon: 'text-color',
-                    },
-                  }}/>
-                <RouterProvider router={router} />
-                {/* <RouteInit /> */}
-                <RouteChangeLoader />
-              </div>
-            </SidebarProvider>
+            <EventProvider>
+                <SidebarProvider>
+                  <div className='App primary'>
+                    <Toaster toastOptions={{
+                      classNames: {
+                        toast: 'overlay !border-gray-600',
+                        title: 'text-color',
+                        description: 'text-color',
+                        icon: 'text-color',
+                      },
+                    }}/>
+                  <RouterProvider router={router} />
+                  {/* <RouteInit /> */}
+                  <RouteChangeLoader />
+                </div>
+              </SidebarProvider>
+            </EventProvider>
           </WorkspaceProvider>
         </OnboardingProvider>
       </AuthProvider>

@@ -3,7 +3,6 @@ import {
   collection, doc, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp, 
   query,
   where,
-  setDoc
 } from 'firebase/firestore';
 import { db } from '../services/firebase'; // Adjust path to your Firebase config
 import { useAuth } from './AuthContext';   // Assumes you're using AuthContext
@@ -15,7 +14,7 @@ const WorkspaceContext = createContext();
 export const useWorkspace = () => useContext(WorkspaceContext);
 
 export function WorkspaceProvider({ children }) {
-    const { currentUser, setCurrentUser } = useAuth();
+    const { currentUser } = useAuth();
     const [workspaces, setWorkspaces] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -56,14 +55,15 @@ export function WorkspaceProvider({ children }) {
             };
 
             // Add workspace document
-            const docRef = await addDoc(collection(db, 'workspaces'), newWorkspace);
+            await addDoc(collection(db, 'workspaces'), newWorkspace);
 
             // Update user's document
             const userDocRef = doc(db, 'users', currentUser.uid);
             await updateDoc(userDocRef, {
             workspaceURL: fullURL,
             });
-            fetchWorkspaces(); // Refresh workspaces
+
+            await fetchWorkspaces(); // Refresh workspaces
 
             // ✅ Instead of directly setting currentUser, let the onSnapshot do the job
             return fullURL;
@@ -98,7 +98,7 @@ export function WorkspaceProvider({ children }) {
 
     useEffect(() => {
         fetchWorkspaces();
-    }, []);
+    }, [currentUser]);
 
     useEffect(() => {
         if (!currentUser) {

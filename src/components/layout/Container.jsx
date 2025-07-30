@@ -49,7 +49,7 @@ function Container() {
 
 
     return (
-        <div className="flex h-full secondary overflow-auto">
+        <div className="flex w-screen h-screen secondary overflow-auto">
         <RouteInit />
         <Sidebar
             isMobileOpen={isMobileOpen}
@@ -58,7 +58,7 @@ function Container() {
             setIsLeftSidebarOpen={setIsLeftSidebarOpen}
         />
 
-        <div className="h-svh w-svw lg:py-2 lg:pr-2">
+        <div className="flex-1 flex flex-col lg:py-2 lg:pr-2 overflow-hidden">
             <Outlet />
         </div>
 

@@ -53,15 +53,16 @@ export default function ProtectedRoute({ children }) {
   }
 
   // 7️⃣ User has workspaceURL but is not in it
-  const workspacePath = `/${currentUser.workspaceURL}`;
+  const workspacePath = `/${currentUser.workspaceURL}/events`;
   if (
-    currentUser.workspaceURL &&
-    !location.pathname.startsWith(workspacePath) &&
-    location.pathname !== "/attendance-tracker/workspace/create" &&
-    location.pathname !== "/attendance-tracker/any/events/all"
-  ) {
-    return <Navigate to={workspacePath} replace />;
-  }
+  currentUser.workspaceURL &&
+  !location.pathname.startsWith(workspacePath) &&
+  location.pathname !== "/attendance-tracker/workspace/create" &&
+  !location.pathname.startsWith("/attendance-tracker/any/events/") &&
+  location.pathname !== "/attendance-tracker/any/events/all"
+) {
+  return <Navigate to={`${workspacePath}/all`} replace />;
+}
 
   // ✅ All good
   return children;
