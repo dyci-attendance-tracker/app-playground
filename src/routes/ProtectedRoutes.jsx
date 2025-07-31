@@ -46,7 +46,7 @@ export default function ProtectedRoute({ children }) {
   // 6️⃣ After onboarding: no workspace URL yet → go to workspace creation
   if (
     !currentUser.workspaceURL &&
-    currentUser.onboardingStep >= 3 &&
+    currentUser.onboardingStep > 3 &&
     location.pathname !== "/attendance-tracker/workspace/create"
   ) {
     return <Navigate to="/attendance-tracker/workspace/create" replace />;

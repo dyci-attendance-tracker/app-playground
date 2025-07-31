@@ -2,15 +2,21 @@ import React from 'react'
 import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../../../contexts/OnboardingContext";
 import onboardingWelcomeAboard from '../../../assets/images/onboarding-welcome-aboard.png';
+import { useLoader } from '../../../contexts/LoaderContext';
 
 function OnboardingStep3() {
 
     const navigate = useNavigate();
     const { goToNextStep } = useOnboarding();
+    const { setLoading } = useLoader();
 
     const handleNext = async () => {
+        setLoading(true);
         const success = await goToNextStep();
-        if (success) navigate("/attendance-tracker");
+        setTimeout(() => {
+            setLoading(false);
+            if (success) navigate("/attendance-tracker");
+        }, 2000);
     };
 
     return (

@@ -3,11 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useOnboarding } from "../../../contexts/OnboardingContext";
 import onboardingYourName from "../../../assets/images/onboarding-your-name.png";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useLoader } from "../../../contexts/LoaderContext";
 
 function OnboardingStep2() {
 
     const { currentUser } = useAuth();
     const { formData, updateField, goToNextStep } = useOnboarding();
+    const { setLoading } = useLoader();
     const [touched, setTouched] = useState(false);
     const navigate = useNavigate();
 
@@ -19,11 +21,17 @@ function OnboardingStep2() {
 
 
     const handleNext = async () => {
+        setLoading(true);
         setTouched(true);
         if (!formData.name.trim()) return;
 
         const success = await goToNextStep();
-        if (success) navigate("/onboarding/step/3");
+        if (!success) {
+            setTimeout(() => {
+                setLoading(false);
+                if (success) navigate("/onboarding/step/3");
+            }, 2000);
+        }
     };
 
     return (

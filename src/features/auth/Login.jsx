@@ -65,7 +65,7 @@ export default function Login() {
   };
 
   return (
-    <div className="primary flex flex-col min-h-[90vh]">
+    <div className="primary flex flex-col min-h-[90vh] px-4">
       <div className="primary flex flex-col justify-center items-center flex-grow  sm:p-6 ">
         <div className=" w-full max-w-sm  py-8 sm:px-6 sm:shadow-sm rounded-lg">
           <div className="text-center mb-6">
