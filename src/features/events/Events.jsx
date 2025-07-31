@@ -118,8 +118,7 @@ function Events() {
 
 
                 {/* Sidebar */}
-                <div className="flex-1 rounded-lg overflow-x-auto scrollbar-thin scrollbar-thumb-gray-700">
-                    <div className="min-w-full">
+                <div className="flex-1 rounded-lg overflow-x-auto hide-scrollbar">
                     {/* Outlet passes sidebar control as context */}
                     <Outlet context={{
                         isRightSidebarOpen,
@@ -128,7 +127,6 @@ function Events() {
                         isEditing,
                         setIsEditing,
                     }}></Outlet>
-                    </div>
                 </div>
             </div>
         </main>

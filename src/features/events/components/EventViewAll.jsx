@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { useWorkspace } from '../../../contexts/WorkspaceContext';
@@ -10,11 +10,6 @@ import ActionsMenu from '../../../components/common/ActionsMenu';
 
 function EventViewAll() {
   const { events, fetchEvents, isLoading } = useEvents();
-  // const { isRightSidebarOpen } = useOutletContext();
-  // const [width, setWidth] = useState(300);
-  // const [windowWidth, setWindowWidth] = useState(0);
-  // const [maxConstraint, setMaxConstraint] = useState(450);
-  // const sidebarRef = useRef(null);
   const containerRef = useRef(null);
 
   const navigate = useNavigate();
@@ -27,33 +22,6 @@ function EventViewAll() {
   useEffect(() => {
     fetchEvents();
   }, [currentWorkspace]);
-
-  // useEffect(() => {
-  //   const updateDimensions = () => {
-  //     const width = window.innerWidth;
-  //     // setWindowWidth(width);
-
-  //     if (isRightSidebarOpen && containerRef.current) {
-  //       const containerWidth = containerRef.current.offsetWidth;
-  //       setMaxConstraint(Math.min(MAX_WIDTH, containerWidth));
-  //     }
-  //   };
-
-  //   updateDimensions();
-  //   window.addEventListener('resize', updateDimensions);
-  //   return () => window.removeEventListener('resize', updateDimensions);
-  // }, [isRightSidebarOpen]);
-
-  // useEffect(() => {
-  //   if (width > maxConstraint) {
-  //     setWidth(maxConstraint);
-  //   } else if (width < MIN_WIDTH && maxConstraint >= MIN_WIDTH) {
-  //     setWidth(MIN_WIDTH);
-  //   }
-  // }, [maxConstraint]);
-
-  // const isMobile = windowWidth < 640;
-  // const isLargeScreen = windowWidth <= 1440;
 
   return (
     <div ref={containerRef} className="h-full flex relative rounded-lg transition-all duration-300">
@@ -74,7 +42,9 @@ function EventViewAll() {
 
               {/* Table Body */}
               {isLoading ? (
-                <div className="text-sm text-color-secondary p-4">Loading events...</div>
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-sm text-color-secondary mt-50">Loading events...</div>
+                </div>
               ) : events.length === 0 ? (
                 <div className="text-sm text-color-secondary p-4">No events found.</div>
               ) : (
@@ -83,11 +53,12 @@ function EventViewAll() {
                     <div
                       key={event.id}
                       className="grid grid-cols-[20px_1.5fr_2fr_150px_120px_140px] gap-4 px-4 py-3 text-left text-sm hover:bg-gray-800 transition-all cursor-pointer group"
+                      onClick={() => {navigate(`/${currentWorkspace.url}/events/${event.id}`)}}
                     >
                       <div className="w-fit">
                         <BoxIcon size={18} className="text-gray-500" />
                       </div>
-                      <div className="truncate text-color" onClick={() => {navigate(`/${currentWorkspace.url}/events/${event.id}`)}}>{event.name}</div>
+                      <div className="truncate text-color">{event.name}</div>
                       <div className="truncate text-color-secondary">{event.summary}</div>
                       <div className="text-color-secondary">
                         {dayjs(event.date).format('MMM D, YYYY')}
