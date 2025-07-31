@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { BoxIcon, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useWorkspace } from '../../contexts/WorkspaceContext';
-import { db } from '../../services/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { useAuth } from '../../contexts/AuthContext';
+import { useEvents } from '../../contexts/EventContext';
+import { Input } from "@material-tailwind/react";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { toast } from 'sonner';
+
 
 function CreateEvent({ open, onClose }) {
-  const { currentWorkspace } = useWorkspace();
-  const { currentUser } = useAuth();
 
-
+  const { createEvent } = useEvents();
   const TITLE_MAX = 80;
   const SUMMARY_MAX = 255;
   const DESCRIPTION_MAX = 1000;
@@ -19,9 +19,11 @@ function CreateEvent({ open, onClose }) {
   const [projectName, setProjectName] = useState('');
   const [summary, setSummary] = useState('');
   const [description, setDescription] = useState('');
+  const [eventDate, setEventDate] = useState('');
   const [titleError, setTitleError] = useState('');
   const [summaryError, setSummaryError] = useState('');
   const [descriptionError, setDescriptionError] = useState('');
+  const [eventDateError, setEventDateError] = useState('');
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -50,6 +52,8 @@ function CreateEvent({ open, onClose }) {
       setTitleError('');
       setSummaryError('');
       setDescriptionError('');
+      setEventDate('');
+      setEventDateError('');
     }
   }, [open]);
 
@@ -82,10 +86,24 @@ function CreateEvent({ open, onClose }) {
     validateSummary(summary);
     validateDescription(description);
 
+    if (!eventDate) {
+      setEventDateError("Event date is required");
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time
+      const inputDate = new Date(eventDate);
+      if (inputDate < today) {
+        setEventDateError("Event date cannot be in the past");
+      } else {
+        setEventDateError('');
+      }
+    }
+
     if (
       !titleError &&
       !summaryError &&
       !descriptionError &&
+      !eventDateError && eventDate &&
       projectName.trim() !== '' &&
       projectName.length <= TITLE_MAX &&
       summary.length <= SUMMARY_MAX &&
@@ -93,25 +111,20 @@ function CreateEvent({ open, onClose }) {
     ) {
       setIsLoading(true);
       try {
-        // Reference to the workspace's project subcollection
-        const projectsRef = collection(db, 'workspaces', currentWorkspace.id, 'events');
-
-        await addDoc(projectsRef, {
+        const eventData = {
           name: projectName.trim(),
           summary: summary.trim(),
           description: description.trim(),
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          createdBy: {
-            uid: currentUser?.uid || null,
-            name: currentUser?.name || 'Unknown',
-          },
-        });
+          date: eventDate
+        };
 
-        onClose(); // Close modal after successful creation
+        await createEvent(eventData); // ✅ Use EventContext instead of direct Firestore
+        toast.success("Event created successfully!");
+        onClose(); // Close modal
       } catch (err) {
         console.error('Error creating project:', err);
         setError('Failed to create project. Please try again.');
+        toast.error("Failed to create event.");
       } finally {
         setIsLoading(false);
       }
@@ -120,13 +133,11 @@ function CreateEvent({ open, onClose }) {
     }
   };
 
-
-
   return (
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 bg-transparent bg-opacity-50 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/40 backdrop-blur-md bg-opacity-50 z-50 flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -177,7 +188,7 @@ function CreateEvent({ open, onClose }) {
                         type="text"
                         maxLength={TITLE_MAX + 1}
                         placeholder="Event name"
-                        className="w-full overlay rounded resize-none  text-color text-xl sm:text-2xl placeholder-gray-500 border-none focus:outline-none"
+                        className="w-full overlay mb-0 rounded resize-none  text-color text-xl sm:text-2xl placeholder-gray-500 border-none focus:outline-none"
                         value={projectName}
                         onChange={(e) => {
                           setProjectName(e.target.value);
@@ -191,7 +202,7 @@ function CreateEvent({ open, onClose }) {
                         </div>
                     </div>
                     {/* Short Summary */}
-                    <div>
+                    <div className="mb-0">
                         <textarea
                         rows={2}
                         maxLength={SUMMARY_MAX + 1}
@@ -210,10 +221,39 @@ function CreateEvent({ open, onClose }) {
                           )}
                         </div>
                     </div>
-                    {/* Attributes */}
-                    <div className='h-5'>
+                    {/* Event Date Input */}
+                    <div className="flex flex-col gap-1">
+                      <ReactDatePicker
+                        selected={eventDate ? new Date(eventDate) : null}
+                        onChange={(date) => {
+                          const selectedDate = date?.toISOString().split("T")[0];
+                          setEventDate(selectedDate);
 
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          const inputDate = new Date(selectedDate);
+
+                          if (!selectedDate) {
+                            setEventDateError("Event date is required");
+                          } else if (inputDate < today) {
+                            setEventDateError("Event date cannot be in the past");
+                          } else {
+                            setEventDateError("");
+                          }
+                        }}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Select event date"
+                        className="w-full overlay text-sm text-color placeholder-gray-500 bg-gray-800 border border-gray-700 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 rounded"
+                        minDate={new Date()}
+                      />
+
+                      {eventDateError && (
+                        <span className="text-red-500 text-xs mt-1 flex justify-end">
+                          {eventDateError}
+                        </span>
+                      )}
                     </div>
+
                     <div className="border-t border-gray-700 my-4"></div>
                     {/* Description Editor */}
                     <div className="flex-1">

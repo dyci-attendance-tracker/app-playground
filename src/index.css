@@ -125,3 +125,14 @@
   left: 50% !important;
   transform: translate(200%, -50%) !important;
 }
+
+/* in your global CSS file (e.g., index.css or App.css) */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+

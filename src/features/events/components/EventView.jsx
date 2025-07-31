@@ -1,107 +1,59 @@
-import { useState, useEffect, useRef } from 'react'
-import { useOutletContext } from 'react-router-dom'
-import { ResizableBox } from 'react-resizable'
-import 'react-resizable/css/styles.css'
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { useEvents } from '../../../contexts/EventContext';
+import dayjs from 'dayjs';
+import { Button, Typography } from '@material-tailwind/react';
+import { BoxIcon } from 'lucide-react';
 
 function EventView() {
-  const { isRightSidebarOpen } = useOutletContext()
-  const [width, setWidth] = useState(300)
-  const [windowWidth, setWindowWidth] = useState(0)
-  const [maxConstraint, setMaxConstraint] = useState(450)
-  const sidebarRef = useRef(null)
-  const containerRef = useRef(null)
+  const { eventID } = useParams();
+  const { events, fetchEvents, isLoading } = useEvents();
 
-  const MIN_WIDTH = 350
-  const MAX_WIDTH = 550
+  const [event, setEvent] = useState(null);
 
-  // Detect screen width and update states
+  // Get event when events change or eventId changes
   useEffect(() => {
-    const updateDimensions = () => {
-      const width = window.innerWidth
-      setWindowWidth(width)
-      
-      if (isRightSidebarOpen && containerRef.current) {
-        const containerWidth = containerRef.current.offsetWidth
-        setMaxConstraint(Math.min(MAX_WIDTH, containerWidth))
-      }
+    const found = events.find(e => e.id === eventID);
+    if (found) {
+      setEvent(found);
     }
+  }, [events, eventID]);
 
-    updateDimensions()
-    window.addEventListener('resize', updateDimensions)
-    return () => window.removeEventListener('resize', updateDimensions)
-  }, [isRightSidebarOpen])
-
-  // Update width if it exceeds the new max constraint
   useEffect(() => {
-  if (width > maxConstraint) {
-    setWidth(maxConstraint)
-  } else if (width < MIN_WIDTH && maxConstraint >= MIN_WIDTH) {
-    setWidth(MIN_WIDTH)
+    fetchEvents();
+  }, []);
+
+  if (isLoading || !event) {
+    return (
+      <div className="flex-1 primary flex items-center justify-center text-color-secondary text-sm">
+        Loading event...
+      </div>
+    );
   }
-}, [maxConstraint])
-
-  
-
-  // Determine positioning based on screen size
-  const isMobile = windowWidth < 640
-  const isLargeScreen = windowWidth <= 1440
 
   return (
-    <div
-        className="h-full flex relative rounded-lg transition-all duration-300"
-        ref={containerRef}
-    >
-        {/* Main Content */}
-        <div className="flex-1 rounded-lg primary h-full">
-        {/* Main Content */}
-
-        </div>
-
-        {/* Right Sidebar */}
-        {isRightSidebarOpen && (
-        <div
-            ref={sidebarRef}
-            className={isLargeScreen
-            ? "absolute inset-y-0 right-0 z-10 h-full"
-            : "relative h-full"
-            }
-        >
-            {!isMobile ? (
-            <ResizableBox
-                width={Math.min(width, maxConstraint)}
-                height={Infinity}
-                minConstraints={[MIN_WIDTH, Infinity]}
-                maxConstraints={[maxConstraint, Infinity]}
-                axis="x"
-                resizeHandles={['w']}
-                onResize={(e, data) => setWidth(data.size.width)}
-                className="relative primary h-full border-l border-gray-700 p-4 min-w-[350px] shrink-0"
-                handle={
-                <div className="absolute top-0 left-0 w-[1px] h-full hover:bg-gray-500 cursor-ew-resize z-20" />
-                }
-            >
-                <div className="h-full">
-                {/* Sidebar content */}
-                </div>
-            </ResizableBox>
-            ) : (
-            <div 
-                className="shadow-md primary border-l border-gray-700 p-4 h-full"
-                style={{
-                width: `${Math.min(width, maxConstraint)}px`,
-                minWidth: `${MIN_WIDTH}px`
-                }}
-            >
-                <div className="h-full">
-                {/* Sidebar content */}
-                </div>
+    <div className="h-full flex relative rounded-lg transition-all duration-300">
+      <div className="flex-1 primary h-full overflow-y-auto p-4 flex flex-col gap-4">
+          <div className='flex items-center gap-3'>
+            <BoxIcon size={24} className="text-gray-500" />
+            <div className="flex-1 text-left">
+              <Typography className="text-lg font-semibold text-color">{event.name}</Typography>
+              <Typography className="text-xs text-color-secondary">Date: {dayjs(event.date).format('MM DD, YYYY')}</Typography>
             </div>
-            )}
-        </div>
-        )}
-  </div>
-);
-
+          </div>
+          <div className="flex flex-col gap-4 items-center pl-2">
+            <span className="flex flex-col gap-0 items-center justify-start w-full">
+              <Typography className='text-xs text-color-secondary text-left w-full'>Summary</Typography>
+              <Typography className="text-sm text-color text-left w-full">{event.summary}</Typography>
+            </span>
+            <span className="flex flex-col gap-0 items-center justify-start w-full">
+              <Typography className='text-xs text-color-secondary text-left w-full'>Description</Typography>
+              <Typography className="text-sm text-color text-left w-full">{event.description}</Typography>
+            </span>
+          </div>
+      </div>
+    </div>
+  );
 }
 
-export default EventView
+export default EventView;

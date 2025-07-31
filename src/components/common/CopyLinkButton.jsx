@@ -25,7 +25,7 @@ function CopyLinkButton() {
         }}
         content={
         <div className="flex items-center gap-3">
-          <Typography color="blue-gray" className="font-medium">
+          <Typography color="blue-gray" className="text-xs font-medium">
             Copy View URL
           </Typography>
           <div className='flex items-center'>

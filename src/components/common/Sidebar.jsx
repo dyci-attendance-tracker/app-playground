@@ -134,13 +134,13 @@ function Sidebar() {
                                             </span>
                                             </MenuItem>
                                         </MenuHandler>
-                                        <MenuList className="overlay text-color-secondary backdrop-blur-md w-full p-2 max-w-[200px] border-gray-700 z-50">
+                                        <MenuList className="overlay text-color-secondary backdrop-blur-md w-full p-2 max-w-[230px] border-gray-700 z-50 h-50 overflow-y-auto scrollbar-hide">
                                             <div className="overflow-hidden text-ellipsis whitespace-nowrap">
                                                 {currentUser?.email}
                                             </div>
                                             {/* Should use all the workspaces that the user is a member of */}
                                             {getAllWorkspacesMemberOf().map((workspace) => (
-                                            <MenuItem className="text-color py-1.5 px-2 text-sm  flex gap-2 hover:bg-gray-700" key={workspace.id} onClick={async () => { await changeWorkspace(workspace.url)}}>
+                                            <MenuItem className="text-color py-1.5 px-2 text-sm flex gap-2 hover:bg-gray-700" key={workspace.id} onClick={async () => { await changeWorkspace(workspace.url)}}>
                                                 <div className="py-0.5 px-1 flex items-center  accent-bg text-xs font-bold text-color rounded-sm">
                                                     {getInitials(workspace?.name)}
                                                 </div>

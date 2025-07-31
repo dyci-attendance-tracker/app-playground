@@ -17,6 +17,8 @@ function CreateWorkspace() {
   const [error, setError] = useState('');
   const debouncedURL = useDebounce(workspaceURL, 500);
 
+  const [slugCreated, setSlugCreated] = useState(null);
+
   useEffect(() => {
     const slug = workspaceName.trim().toLowerCase().replace(/\s+/g, '-');
     setWorkspaceURL(`${slug}`);
@@ -41,19 +43,31 @@ function CreateWorkspace() {
     checkURL();
   }, [debouncedURL]);
 
-  // ✅ Use context function for workspace creation
   const handleCreateWorkspace = async () => {
     if (!workspaceName || !workspaceURL || !currentUser || error) return;
     try {
-      await createWorkspace({
+      const slug = workspaceURL;
+      const success = await createWorkspace({
         name: workspaceName,
-        url: workspaceURL,
+        url: slug,
       });
-      navigate(`/attendance-tracker/${workspaceURL}`);
+
+      if (success) {
+        setSlugCreated(`attendance-tracker/${slug}`); // Track expected URL
+      }
     } catch (err) {
       console.error('Failed to create workspace:', err);
     }
   };
+
+  // ✅ Navigate ONLY once the currentUser's workspaceURL is updated
+  useEffect(() => {
+  if (slugCreated && currentUser?.workspaceURL === slugCreated) {
+    navigate(`/${slugCreated}`);
+  }
+  }, [currentUser?.workspaceURL, slugCreated, navigate]);
+
+
 
   return (
     <div className='flex flex-col h-[90vh] overflow-y-auto primary'>

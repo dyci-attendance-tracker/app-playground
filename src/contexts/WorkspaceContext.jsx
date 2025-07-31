@@ -3,7 +3,6 @@ import {
   collection, doc, addDoc, updateDoc, deleteDoc, getDocs, serverTimestamp, 
   query,
   where,
-  setDoc
 } from 'firebase/firestore';
 import { db } from '../services/firebase'; // Adjust path to your Firebase config
 import { useAuth } from './AuthContext';   // Assumes you're using AuthContext
@@ -18,8 +17,6 @@ export function WorkspaceProvider({ children }) {
     const { currentUser } = useAuth();
     const [workspaces, setWorkspaces] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-
-  
 
     const fetchWorkspaces = async () => {
         setIsLoading(true);
@@ -48,29 +45,36 @@ export function WorkspaceProvider({ children }) {
 
         setIsLoading(true);
         try {
-        const newWorkspace = {
+            const newWorkspace = {
             name,
             url: fullURL,
             icon: 'default-icon',
             createdBy: currentUser.uid,
             createdAt: serverTimestamp(),
             members: [currentUser.uid],
-        };
+            };
 
-        const docRef = await addDoc(collection(db, 'workspaces'), newWorkspace);
+            // Add workspace document
+            await addDoc(collection(db, 'workspaces'), newWorkspace);
 
-        await setDoc(doc(db, 'users', currentUser.uid), {
+            // Update user's document
+            const userDocRef = doc(db, 'users', currentUser.uid);
+            await updateDoc(userDocRef, {
             workspaceURL: fullURL,
-        }, { merge: true });
+            });
 
-        return docRef.id;
+            await fetchWorkspaces(); // Refresh workspaces
+
+            // ✅ Instead of directly setting currentUser, let the onSnapshot do the job
+            return fullURL;
         } catch (err) {
-        console.error('Error creating workspace:', err);
-        throw err;
+            console.error('Error creating workspace:', err);
+            throw err;
         } finally {
-        setIsLoading(false);
+            setIsLoading(false);
         }
     };
+
 
     const updateWorkspace = async (id, updates) => {
         if (!id || !updates) return;
@@ -94,7 +98,7 @@ export function WorkspaceProvider({ children }) {
 
     useEffect(() => {
         fetchWorkspaces();
-    }, []);
+    }, [currentUser]);
 
     useEffect(() => {
         if (!currentUser) {

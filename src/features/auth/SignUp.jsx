@@ -37,7 +37,7 @@ export default function Signup() {
 
         try {
         await signup(formData.email, formData.password);
-        navigate("/workspace/onboarding");
+        navigate("/onboarding/step/1");
         } catch (err) {
         console.error("Signup error:", err);
         setError(err.message || "Failed to create account");
@@ -52,7 +52,7 @@ export default function Signup() {
 
         try {
         await signInWithGoogle();
-        navigate("/workspace/onboarding");
+        navigate("/onboarding/step/1");
         } catch (err) {
         console.error("Google sign-in error:", err);
         setError(err.message || "Google sign-in failed");
@@ -66,7 +66,7 @@ export default function Signup() {
     };
 
     return (
-        <div className="primary flex flex-col min-h-[90vh]">
+        <div className="primary flex flex-col min-h-[90vh] px-4">
         <div className="primary flex flex-col justify-center items-center flex-grow sm:p-6">
             <div className="w-full max-w-sm py-8 sm:px-6 sm:shadow-sm rounded-lg">
             <div className="text-center mb-6">
@@ -208,7 +208,7 @@ export default function Signup() {
                 <p className="text-color">
                 Already have an account?{" "}
                 <a
-                    href="/login"
+                    href="/"
                     className="font-medium accent-text cursor-pointer hover:text-blue-500"
                 >
                     Sign in
