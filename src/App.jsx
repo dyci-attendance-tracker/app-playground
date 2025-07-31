@@ -33,6 +33,7 @@ import OnboardingStep3 from './features/onboarding/components/OnboardingStep3.js
 import { OnboardingProvider } from './contexts/OnboardingContext.jsx';
 import RedirectToOnboardingStep from './routes/RedirectToOnboardingStep.jsx';
 import { EventProvider } from './contexts/EventContext.jsx';
+import { ParticipantsProvider } from './contexts/ParticipantsContext.jsx';
 
 const router = createBrowserRouter([
   {
@@ -131,6 +132,7 @@ function App() {
         <OnboardingProvider>
           <WorkspaceProvider>
             <EventProvider>
+              <ParticipantsProvider>
                 <SidebarProvider>
                   <div className='App primary'>
                     <Toaster toastOptions={{
@@ -144,8 +146,9 @@ function App() {
                   <RouterProvider router={router} />
                   {/* <RouteInit /> */}
                   <RouteChangeLoader />
-                </div>
-              </SidebarProvider>
+                  </div>
+                </SidebarProvider>
+              </ParticipantsProvider>
             </EventProvider>
           </WorkspaceProvider>
         </OnboardingProvider>
