@@ -34,6 +34,9 @@ import { OnboardingProvider } from './contexts/OnboardingContext.jsx';
 import RedirectToOnboardingStep from './routes/RedirectToOnboardingStep.jsx';
 import { EventProvider } from './contexts/EventContext.jsx';
 import { ParticipantsProvider } from './contexts/ParticipantsContext.jsx';
+import { ProfilesProvider } from './contexts/ProfilesContext.jsx';
+import Profiles from './features/profiles/Profiles.jsx';
+import ProfileViewAll from './features/profiles/components/ProfileViewAll.jsx';
 
 const router = createBrowserRouter([
   {
@@ -83,6 +86,16 @@ const router = createBrowserRouter([
               {
                 path: ":eventID",
                 element: <ProtectedRoute><EventView /></ProtectedRoute>
+              },
+            ]
+          },
+          {
+            path: "profiles",
+            element: <ProtectedRoute><Profiles /></ProtectedRoute>,
+            children: [
+              {
+                path: "all",
+                element: <ProtectedRoute><ProfileViewAll /></ProtectedRoute>
               }
             ]
           }
@@ -131,6 +144,7 @@ function App() {
       <AuthProvider>
         <OnboardingProvider>
           <WorkspaceProvider>
+            <ProfilesProvider>
             <EventProvider>
               <ParticipantsProvider>
                 <SidebarProvider>
@@ -150,6 +164,7 @@ function App() {
                 </SidebarProvider>
               </ParticipantsProvider>
             </EventProvider>
+            </ProfilesProvider>
           </WorkspaceProvider>
         </OnboardingProvider>
       </AuthProvider>

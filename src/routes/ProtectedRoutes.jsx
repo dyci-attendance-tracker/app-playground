@@ -59,7 +59,8 @@ export default function ProtectedRoute({ children }) {
   !location.pathname.startsWith(workspacePath) &&
   location.pathname !== "/attendance-tracker/workspace/create" &&
   !location.pathname.startsWith("/attendance-tracker/any/events/") &&
-  location.pathname !== "/attendance-tracker/any/events/all"
+  location.pathname !== "/attendance-tracker/any/events/all" &&
+  !location.pathname.startsWith(`/${currentUser.workspaceURL}/profiles`)
 ) {
   return <Navigate to={`${workspacePath}/all`} replace />;
 }

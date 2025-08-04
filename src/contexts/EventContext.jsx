@@ -105,7 +105,7 @@ export function EventProvider({ children }) {
         console.error('Error duplicating event:', err);
         throw err;
     }
-};
+  };
 
 
   useEffect(() => {

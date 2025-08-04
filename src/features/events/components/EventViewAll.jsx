@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import { useWorkspace } from '../../../contexts/WorkspaceContext';
@@ -9,6 +9,7 @@ import { BoxIcon, EllipsisVertical } from 'lucide-react';
 import ActionsMenu from '../../../components/common/ActionsMenu';
 
 function EventViewAll() {
+  const { currentPage, itemsPerPage } = useOutletContext();
   const { events, fetchEvents, isLoading } = useEvents();
   const containerRef = useRef(null);
 
@@ -22,6 +23,11 @@ function EventViewAll() {
   useEffect(() => {
     fetchEvents();
   }, [currentWorkspace]);
+
+  const paginatedEvents = events.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div ref={containerRef} className="h-full flex relative rounded-lg transition-all duration-300">
@@ -49,7 +55,7 @@ function EventViewAll() {
                 <div className="text-sm text-color-secondary p-4">No events found.</div>
               ) : (
                 <div className="divide-y divide-gray-800">
-                  {events.map((event) => (
+                  {paginatedEvents.map((event) => (
                     <div
                       key={event.id}
                       className="grid grid-cols-[20px_1.5fr_2fr_150px_120px_140px] gap-4 px-4 py-3 text-left text-sm hover:bg-gray-800 transition-all cursor-pointer group"
