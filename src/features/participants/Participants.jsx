@@ -5,6 +5,7 @@ import { useWorkspace } from '../../contexts/WorkspaceContext';
 import { useParticipants } from '../../contexts/ParticipantsContext';
 import { Typography } from '@material-tailwind/react';
 import ProfileActionMenu from '../../components/common/ProfileActionMenu';
+import ParticipantActionMenu from '../../components/common/ParticipantActionMenu';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -76,7 +77,7 @@ function Participants({ currentPage, itemsPerPage }) {
                                 <div className="text-color-secondary">{profile.yearLevel} - {profile.section}</div>
                                 <div className="text-color-secondary">{profile.status}</div>
                                 <div className="flex items-center justify-center gap-2 pr-4">
-                                <ProfileActionMenu selectedProfile={profile} />
+                                <ParticipantActionMenu selectedParticipant={profile} />
                                 </div>
                             </div>
                             ))}

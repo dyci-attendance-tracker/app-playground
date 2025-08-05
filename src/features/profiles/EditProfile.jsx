@@ -194,7 +194,7 @@ function EditProfile({ open, onClose, profile }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={(e) => {e.stopPropagation(); onClose()}}
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
@@ -208,7 +208,7 @@ function EditProfile({ open, onClose, profile }) {
             <div className="flex justify-between items-center py-4  border-gray-700">
                 <h2 className="text-xs font-semibold">Edit Profile</h2>
                 <motion.button
-                    onClick={onClose}
+                    onClick={(e) => {e.stopPropagation(); onClose()}}
                     className="text-gray-400 hover:text-white"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
@@ -224,7 +224,7 @@ function EditProfile({ open, onClose, profile }) {
                 <h2 className="text-xs font-semibold w-full text-left">Personal Information</h2>
                 {/* ID Number */}
                 <div className='flex flex-col justify-start items-start'>
-                    <textarea
+                    <input
                     rows={1}
                     type="text"
                     placeholder="ID Number"
@@ -245,7 +245,7 @@ function EditProfile({ open, onClose, profile }) {
 
                 {/* First Name */}
                 <div className='flex flex-col justify-start items-start'>
-                    <textarea
+                    <input
                     rows={1}
                     type="text"
                     maxLength={FULLNAME_MAX + 1}
@@ -265,7 +265,7 @@ function EditProfile({ open, onClose, profile }) {
                 
                 {/* Last Name */}
                 <div className='flex flex-col justify-start items-start'>
-                    <textarea
+                    <input
                     rows={1}
                     type="text"
                     maxLength={FULLNAME_MAX + 1}
@@ -285,7 +285,7 @@ function EditProfile({ open, onClose, profile }) {
 
                 {/* Middle Name */}
                 <div className='flex flex-col justify-start items-start'>
-                    <textarea
+                    <input
                     rows={1}
                     type="text"
                     maxLength={FULLNAME_MAX + 1}
@@ -306,7 +306,7 @@ function EditProfile({ open, onClose, profile }) {
                 {/* Email & Phone*/}
                 <div className='flex gap-2 items-center justify-between'>
                     <div className='flex flex-col justify-start items-start'>
-                        <textarea
+                        <input
                             rows={1}
                             type="email"
                             placeholder="Email"
@@ -324,7 +324,7 @@ function EditProfile({ open, onClose, profile }) {
                     </div>
 
                     <div className='flex flex-col justify-start items-start'>
-                        <textarea
+                        <input
                             rows={1}
                             type="text"
                             placeholder="Phone"
@@ -346,8 +346,8 @@ function EditProfile({ open, onClose, profile }) {
 
                 {/* College Department */}
                 <div className='flex gap-2 items-center justify-between'>
-                    <div className='flex flex-col justify-start items-start'>
-                        <textarea
+                    <div className='flex flex-col justify-start items-start w-full'>
+                        <input
                             rows={1}
                             placeholder="College Department"
                             className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
@@ -361,7 +361,7 @@ function EditProfile({ open, onClose, profile }) {
 
                     {/* Year Level */}
                     <div className='flex flex-col justify-start items-start'>
-                        <textarea
+                        <input
                             rows={1}
                             placeholder="Year Level"
                             className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
@@ -376,8 +376,8 @@ function EditProfile({ open, onClose, profile }) {
 
                 {/* Course */}
                 <div className='flex gap-2 items-center justify-between'>
-                    <div className='flex flex-col justify-start items-start'>
-                        <textarea
+                    <div className='flex flex-col justify-start items-start w-full'>
+                        <input
                             rows={1}
                             placeholder="Course"
                             className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
@@ -391,7 +391,7 @@ function EditProfile({ open, onClose, profile }) {
 
                     {/* Section */}
                     <div className='flex flex-col justify-start items-start'>
-                        <textarea
+                        <input
                             rows={1}
                             placeholder="Section"
                             className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
@@ -413,7 +413,7 @@ function EditProfile({ open, onClose, profile }) {
             {/* Footer */}
             <div className="py-4 flex gap-2 border-t border-gray-700 justify-end mt-2">
                 <button
-                    onClick={onClose}
+                    onClick={(e) => {e.stopPropagation(); onClose()}}
                     className="px-4 py-1.5 h-fit text-xs gap-2 font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
@@ -422,7 +422,7 @@ function EditProfile({ open, onClose, profile }) {
                 </button>
                 <button
                     className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={handleUpdate}
+                    onClick={(e) => {e.stopPropagation(); handleUpdate}}
                     disabled={
                     isLoading
                     }

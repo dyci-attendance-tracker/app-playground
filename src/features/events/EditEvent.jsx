@@ -138,7 +138,7 @@ function EditEvent({ open, onClose, event }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={(e) => {e.stopPropagation(); onClose()}}
         >
           <motion.div
             className="overlay border px-4 sm:px-7 min-h-[85vh] max-h-[85vh] flex flex-col justify-between border-gray-700 rounded-lg w-full max-w-4xl text-color"
@@ -165,7 +165,7 @@ function EditEvent({ open, onClose, event }) {
             <div className="flex justify-between items-center py-4 border-gray-700">
               <h2 className="text-sm font-semibold">Edit Event</h2>
               <motion.button
-                onClick={onClose}
+                onClick={(e) => {e.stopPropagation(); onClose()}}
                 className="text-gray-400 hover:text-white"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -291,14 +291,14 @@ function EditEvent({ open, onClose, event }) {
             {/* Footer */}
             <div className="py-4 flex gap-2 border-t border-gray-700 justify-end">
               <button
-                onClick={onClose}
+                onClick={(e) => {e.stopPropagation(); onClose()}}
                 className="px-4 py-1.5 h-fit text-sm gap-2 font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
               >
                 Cancel
               </button>
               <button
                 className="px-4 py-1.5 h-fit text-sm font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={handleUpdate}
+                onClick={(e) => {e.stopPropagation(); handleUpdate()}}
                 disabled={
                   isLoading ||
                   !projectName.trim() ||

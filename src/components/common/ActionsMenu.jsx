@@ -93,14 +93,14 @@ export default function ActionsMenu({ selectedEvent }) {
 
         <MenuList className="overlay text-color-secondary backdrop-blur-md w-full p-1 max-w-[200px] border-gray-700">
             <MenuItem
-                onClick={() => setOpenModal(true)}
+                onClick = {(e) => { e.stopPropagation();setOpenModal(true)}}
                 className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
                 >
                 <Pencil size={16} className="text-color-secondary" />
                 Edit
             </MenuItem>
             <MenuItem
-            onClick={onDuplicate}
+            onClick = {(e) => { e.stopPropagation();onDuplicate()}}
             className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
             >
             <Copy size={16} className="text-color-secondary" />
@@ -108,7 +108,7 @@ export default function ActionsMenu({ selectedEvent }) {
             </MenuItem>
             <div className="h-px my-1 bg-gray-700" />
             <MenuItem
-            onClick={() => setOpenDeleteDialog(true)}
+            onClick = {(e) => { e.stopPropagation();setOpenDeleteDialog(true)}}
             className="text-red-400 flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
             >
             <Trash2 size={16} className="text-red-400" />
@@ -116,14 +116,14 @@ export default function ActionsMenu({ selectedEvent }) {
             </MenuItem>
             <div className="h-px my-1 bg-gray-700" />
             <MenuItem
-            onClick={onClearList}
+            onClick = {(e) => { e.stopPropagation();onClearList()}}
             className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
             >
             <RefreshCw size={16} className="text-color-secondary" />
             Clear List
             </MenuItem>
             <MenuItem
-            onClick={onResetList}
+            onClick = {(e) => { e.stopPropagation();onResetList()}}
             className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
             >
             <StepBack size={16} className="text-color-secondary" />
@@ -131,7 +131,7 @@ export default function ActionsMenu({ selectedEvent }) {
             </MenuItem>
             <div className="h-px my-1 bg-gray-700" />
             <MenuItem
-            onClick={onDownload}
+            onClick = {(e) => { e.stopPropagation();onDownload()}}
             className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
             >
             <Download size={16} className="text-color-secondary" />
@@ -139,14 +139,14 @@ export default function ActionsMenu({ selectedEvent }) {
             </MenuItem>
             <div className="h-px my-1 bg-gray-700" />
             <MenuItem
-            onClick={onShareCheckInLink}
+            onClick = {(e) => { e.stopPropagation();onShareCheckInLink()}}
             className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
             >
             <Link size={16} className="text-color-secondary" />
             Share Check-In Link
             </MenuItem>
             <MenuItem
-            onClick={onShareRegistrationLink}
+            onClick = {(e) => { e.stopPropagation();onShareRegistrationLink()}}
             className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
             >
             <Link size={16} className="text-color-secondary" />
@@ -161,7 +161,7 @@ export default function ActionsMenu({ selectedEvent }) {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                onClick={() => setOpenDeleteDialog(false)}
+                onClick = {(e) => { e.stopPropagation();setOpenDeleteDialog(false)}}
                 >
                 <motion.div
                     className="overlay w-full max-w-md rounded-lg border border-gray-700 bg-gray-900 p-6 text-color"
@@ -177,13 +177,13 @@ export default function ActionsMenu({ selectedEvent }) {
                     opacity: 0,
                     transition: { duration: 0.15 }
                     }}
-                    onClick={(e) => e.stopPropagation()}
+                    onClick = {(e) => e.stopPropagation()}
                 >
                     {/* Header */}
                     <div className="flex justify-between items-center mb-4">
                     <h3 className="text-base font-semibold">Confirm Delete</h3>
                     <button
-                        onClick={() => setOpenDeleteDialog(false)}
+                        onClick = {(e) => { e.stopPropagation();setOpenDeleteDialog(false)}}
                         className="text-gray-400 hover:text-white"
                     >
                         <X size={20} className="hover:bg-gray-700 rounded" />
@@ -199,13 +199,13 @@ export default function ActionsMenu({ selectedEvent }) {
                     {/* Footer */}
                     <div className="mt-6 flex justify-end gap-2 border-t border-gray-700 pt-4">
                     <button
-                        onClick={() => setOpenDeleteDialog(false)}
+                        onClick = {(e) => { e.stopPropagation();setOpenDeleteDialog(false)}}
                         className="px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
                     >
                         Cancel
                     </button>
                     <button
-                        onClick={onDelete}
+                        onClick = {(e) => { e.stopPropagation();onDelete()}}
                         className="px-4 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded"
                     >
                         Confirm

@@ -41,9 +41,9 @@ export default function ProfileActionMenu({ selectedProfile }) {
     <>
       <EditProfile
         open={openModal}
-        onClose={() => setOpenModal(false)}
+        onClose={(e) => {e.stopPropagation(); setOpenModal(false)}}
         profile={selectedProfile}
-        onSave={() => setOpenModal(false)}
+        onSave={(e) => {e.stopPropagation(); setOpenModal(false)}}
       />
 
       <Menu placement="bottom-end">
@@ -62,7 +62,7 @@ export default function ProfileActionMenu({ selectedProfile }) {
 
         <MenuList className="overlay text-color-secondary backdrop-blur-md p-1 max-w-[200px] border-gray-700">
           <MenuItem
-            onClick={() => setOpenModal(true)}
+            onClick={(e) => {e.stopPropagation(); setOpenModal(true)}}
             className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
           >
             <Pencil size={16} className="text-color-secondary" />
@@ -72,7 +72,7 @@ export default function ProfileActionMenu({ selectedProfile }) {
           <div className="h-px my-1 bg-gray-700" />
 
           <MenuItem
-            onClick={() => setOpenDeleteDialog(true)}
+            onClick={(e) => {e.stopPropagation(); setOpenDeleteDialog(true)}}
             className="text-red-400 flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
           >
             <Trash2 size={16} className="text-red-400" />
@@ -89,7 +89,7 @@ export default function ProfileActionMenu({ selectedProfile }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setOpenDeleteDialog(false)}
+            onClick={(e) => {e.stopPropagation(); setOpenDeleteDialog(false)}}
           >
             <motion.div
               className="overlay w-full max-w-md rounded-lg border border-gray-700 bg-gray-900 p-6 text-color"
@@ -110,7 +110,7 @@ export default function ProfileActionMenu({ selectedProfile }) {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-base font-semibold">Confirm Delete</h3>
                 <button
-                  onClick={() => setOpenDeleteDialog(false)}
+                  onClick={(e) => {e.stopPropagation(); setOpenDeleteDialog(false)}}
                   className="text-gray-400 hover:text-white"
                 >
                   <X size={20} className="hover:bg-gray-700 rounded" />
@@ -127,13 +127,13 @@ export default function ProfileActionMenu({ selectedProfile }) {
 
               <div className="mt-6 flex justify-end gap-2 border-t border-gray-700 pt-4">
                 <button
-                  onClick={() => setOpenDeleteDialog(false)}
+                  onClick={(e) => {e.stopPropagation(); setOpenDeleteDialog(false)}}
                   className="px-4 py-1.5 text-sm font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
                 >
                   Cancel
                 </button>
                 <button
-                  onClick={onDelete}
+                  onClick={(e) => {e.stopPropagation(); onDelete()}}
                   className="px-4 py-1.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded"
                 >
                   Confirm

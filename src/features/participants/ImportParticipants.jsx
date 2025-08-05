@@ -43,7 +43,7 @@ function ImportParticipants({ open, onClose, eventId }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={(e) => {e.stopPropagation(); onClose()}}
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
@@ -57,7 +57,7 @@ function ImportParticipants({ open, onClose, eventId }) {
             <div className="flex justify-between items-center py-4 border-gray-700">
               <h2 className="text-xs font-semibold">Import Participants</h2>
               <motion.button
-                onClick={onClose}
+                onClick={(e) => {e.stopPropagation(); onClose()}}
                 className="text-gray-400 hover:text-white"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -128,13 +128,13 @@ function ImportParticipants({ open, onClose, eventId }) {
             {/* Footer */}
             <div className="py-4 flex gap-2 border-t border-gray-700 justify-end">
               <button
-                onClick={onClose}
+                onClick={(e) => {e.stopPropagation(); onClose()}}
                 className="px-4 py-1.5 h-fit text-xs font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
               >
                 Cancel
               </button>
               <button
-                onClick={handleImport}
+                onClick={(e) => {e.stopPropagation(); handleImport}}
                 disabled={isLoading || !file}
                 className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >

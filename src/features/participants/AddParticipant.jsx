@@ -240,7 +240,7 @@ function AddParticipant({ open, onClose, eventId  }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={(e) => {e.stopPropagation(); onClose()}}
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
@@ -254,7 +254,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                 <div className="flex justify-between items-center py-4  border-gray-700">
                     <h2 className="text-xs font-semibold">Add Participant</h2>
                     <motion.button
-                        onClick={onClose}
+                        onClick={(e) => {e.stopPropagation(); onClose()}}
                         className="text-gray-400 hover:text-white"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -288,7 +288,8 @@ function AddParticipant({ open, onClose, eventId  }) {
                         {matchedProfile && (
                         <div className="flex justify-end mb-2">
                             <button
-                            onClick={() => {
+                            onClick={(e) => {
+                                e.stopPropagation();
                                 const {
                                 IDNumber,
                                 firstName,
@@ -494,7 +495,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                 {/* Footer */}
                 <div className="py-4 flex gap-2 border-t border-gray-700 justify-end">
                     <button
-                        onClick={onClose}
+                        onClick={(e) => {e.stopPropagation(); onClose()}}
                         className="px-4 py-1.5 h-fit text-xs gap-2 font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
@@ -503,7 +504,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                     </button>
                     <button
                       className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleAdd}
+                      onClick={(e) => {e.stopPropagation();handleAdd}}
                       disabled={
                         isLoading
                       }

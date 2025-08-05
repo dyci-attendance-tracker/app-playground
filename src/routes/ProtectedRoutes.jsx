@@ -56,7 +56,7 @@ export default function ProtectedRoute({ children }) {
   const workspacePath = `/${currentUser.workspaceURL}/events`;
   if (
   currentUser.workspaceURL &&
-  !location.pathname.startsWith(workspacePath) &&
+  !location.pathname.includes(`/${currentUser.workspaceURL}/`) &&
   location.pathname !== "/attendance-tracker/workspace/create" &&
   !location.pathname.startsWith("/attendance-tracker/any/events/") &&
   location.pathname !== "/attendance-tracker/any/events/all" &&
