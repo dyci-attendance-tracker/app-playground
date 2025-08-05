@@ -5,7 +5,7 @@ import { useWorkspace } from '../../contexts/WorkspaceContext';
 import { Typography, Chip, Button } from '@material-tailwind/react';
 import { Outlet, useParams } from 'react-router';
 import CopyLinkButton from '../../components/common/CopyLinkButton';
-import ProjectFilterButton from '../../components/common/ProjectFilterButton';
+import ParticipantFilterButton from '../../components/common/ParticipantFilterButton';
 import { useProfiles } from '../../contexts/ProfilesContext';
 import { navigatePage } from '../../utils/navigation';
 import CreateProfile from './CreateProfile';
@@ -128,7 +128,7 @@ function Profiles() {
                         className="pl-10 w-full px-3 py-1.5 rounded-md secondary border border-gray-700 text-xs text-color placeholder:text-gray-500 focus:outline-none"
                         />
                     </div>)}
-                    <ProjectFilterButton></ProjectFilterButton>
+                    <ParticipantFilterButton></ParticipantFilterButton>
                     {selectedProfile && (
                     <div className="flex gap-2 items-center justify-between">
                             <div className="flex gap-2 ml-auto">

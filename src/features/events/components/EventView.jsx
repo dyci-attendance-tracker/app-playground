@@ -7,7 +7,7 @@ import { BoxIcon } from 'lucide-react';
 import Participants from '../../participants/Participants';
 
 function EventView() {
-  const { currentPage, itemsPerPage } = useOutletContext();
+  const { currentPage, itemsPerPage, filteredParticipants } = useOutletContext();
   const { eventID } = useParams();
   const { events, fetchEvents, isLoading } = useEvents();
 
@@ -59,8 +59,8 @@ function EventView() {
           </span>
         </div>
       </div>
-      <div className="min-w-[300px] min-h-[50vh] overflow-x-auto p-4 flex flex-col gap-4 hide-scrollbar">
-        <Participants currentPage={currentPage} itemsPerPage={itemsPerPage}/>
+      <div className="min-w-[300px] min-h-[50vh] overflow-x-auto px-4 pb-2  flex flex-col gap-4 hide-scrollbar">
+        <Participants currentPage={currentPage} itemsPerPage={itemsPerPage} filteredParticipants={filteredParticipants}/>
       </div>
 
     </div>

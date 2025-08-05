@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Box, PanelRight, Plus, Search, Upload, UserPlus2 } from 'lucide-react'
+import { Box, PanelRight, Plus, Search, Upload, UserPlus2, X } from 'lucide-react'
 import { useSidebar } from '../../contexts/SidebarContext'
 import MainView from './components/EventView'
 import { Outlet, useParams } from 'react-router'
@@ -7,7 +7,7 @@ import { Button, Chip, Typography } from '@material-tailwind/react'
 import { useWorkspace } from '../../contexts/WorkspaceContext'
 import { navigatePage } from '../../utils/navigation'
 import CopyLinkButton from '../../components/common/CopyLinkButton'
-import ProjectFilterButton from '../../components/common/ProjectFilterButton'
+import ParticipantFilterButton from '../../components/common/ParticipantFilterButton'
 import CreateEvent from './CreateEvent'
 import ActionsMenu from '../../components/common/ActionsMenu'
 import { useEvents } from '../../contexts/EventContext'
@@ -32,6 +32,13 @@ function Events() {
 
   const { participants } = useParticipants();
 
+  //Filter States - participants
+  const [selectedDepartment, setSelectedDepartment] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [selectedYear, setSelectedYear] = useState(null);
+  const [selectedSection, setSelectedSection] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState(null);
+
   // 🔍 Filter logic
   const filteredEvents = (events ?? []).filter((event) =>
     event.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -39,6 +46,49 @@ function Events() {
     event.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     event.location?.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const filteredParticipants = (participants ?? []).filter((participant) => {
+    const matchesDepartment =
+      !selectedDepartment ||
+      participant.collegeDepartment?.toLowerCase() === selectedDepartment.toLowerCase();
+
+    const matchesCourse =
+      !selectedCourse ||
+      participant.course?.toLowerCase() === selectedCourse.toLowerCase();
+
+    const matchesYear =
+      !selectedYear ||
+      participant.yearLevel?.toLowerCase() === selectedYear.toLowerCase();
+
+    const matchesSection =
+      !selectedSection ||
+      participant.section?.toLowerCase() === selectedSection.toLowerCase();
+
+    const matchesStatus =
+      !selectedStatus ||
+      participant.status?.toLowerCase() === selectedStatus.toLowerCase();
+
+    const matchesSearch =
+      !searchQuery ||
+      participant.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      participant.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      participant.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      participant.phone?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      participant.collegeDepartment?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      participant.course?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      participant.yearLevel?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      participant.section?.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return (
+      matchesDepartment &&
+      matchesCourse &&
+      matchesYear &&
+      matchesSection &&
+      matchesStatus &&
+      matchesSearch
+    );
+  });
+
 
   const totalPages = eventID
     ? Math.ceil(participants.length / itemsPerPage)
@@ -62,6 +112,29 @@ function Events() {
       setCurrentPage(page);
     }
   };
+
+  const filterChips = [
+    {
+      label: selectedDepartment,
+      onRemove: () => {setSelectedDepartment(null); setSelectedCourse(null)},
+    },
+    {
+      label: selectedCourse,
+      onRemove: () => setSelectedCourse(null),
+    },
+    {
+      label: selectedYear,
+      onRemove: () => setSelectedYear(null),
+    },
+    {
+      label: selectedSection,
+      onRemove: () => setSelectedSection(null),
+    },
+    {
+      label: selectedStatus,
+      onRemove: () => setSelectedStatus(null),
+    },
+  ].filter((chip) => chip.label);
 
   return (
     <>
@@ -115,8 +188,31 @@ function Events() {
             </div>
           </div>
 
+          {window.innerWidth < 640 && (
+            <div className="h-10 border-b border-gray-700 px-3 flex items-center">
+              <div className="flex w-full overflow-x-auto scrollbar-hide whitespace-nowrap gap-2 hide-scrollbar">
+                {selectedEvent && (
+                  <>
+                    {filterChips.map((chip, index) => (
+                      <div
+                        key={index}
+                        className="flex-shrink-0 flex items-center gap-1 bg-gray-700 text-color px-2 py-1 rounded-md text-xs cursor-pointer hover:bg-gray-600"
+                      >
+                        <span className="truncate">{chip.label}</span>
+                        <button onClick={chip.onRemove}>
+                          <X size={14} className="text-color-secondary hover:text-red-400" />
+                        </button>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+
           {/* Filters */}
-          <div className="h-10 border-b border-gray-700 px-3 flex items-center justify-between sm:justify-end">
+          <div className="h-10 border-b border-gray-700 px-2 flex items-center justify-between sm:justify-end">
             <div className="flex gap-2 items-center justify-between w-full">
 
                 {!selectedEvent && (
@@ -154,11 +250,39 @@ function Events() {
                 </div>)}
 
                 <div className="flex gap-2">
-                    <ProjectFilterButton />
                     {selectedEvent && (
+                      <>
+                        {window.innerWidth > 640 && (
+                          <div className="flex gap-2 items-center">
+                          {filterChips.map((chip, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-1 bg-gray-700 text-color px-2 py-1 rounded-md text-xs cursor-pointer hover:bg-gray-600"
+                            >
+                              <span className='truncate'>{chip.label}</span>
+                              <button onClick={chip.onRemove}>
+                                <X size={14} className="text-color-secondary hover:text-red-400" />
+                              </button>
+                            </div>
+                          ))}
+                          {/* <Typography className='text-color text-xs font-semibold'>Filter:</Typography> */}
+                        </div>)}
+                        <ParticipantFilterButton
+                          selectedDepartment={selectedDepartment}
+                          setSelectedDepartment={setSelectedDepartment}
+                          selectedCourse={selectedCourse}
+                          setSelectedCourse={setSelectedCourse}
+                          selectedYear={selectedYear}
+                          setSelectedYear={setSelectedYear}
+                          selectedSection={selectedSection}
+                          setSelectedSection={setSelectedSection}
+                          selectedStatus={selectedStatus}
+                          setSelectedStatus={setSelectedStatus}
+                        />
                         <div className="flex gap-2 ml-auto">
                         <ActionsMenu selectedEvent={selectedEvent} />
                         </div>
+                      </>
                     )}
                 </div>
             </div>
@@ -170,15 +294,20 @@ function Events() {
               currentPage,
               itemsPerPage,
               filteredEvents,
+              filteredParticipants
             }} />
           </div>
 
           {/* Pagination */}
           <div className="flex w-full mt-auto justify-between items-center gap-2 py-4 lg:px-6 px-4 text-sm text-color-secondary border-t border-gray-700">
-            <Typography className='text-color text-xs font-semibold'>Page {currentPage} of {totalPages}</Typography>
-            <div className="flex gap-4 items-center">
+            <div className="flex gap-1 items-center">
+              <Typography className='text-color text-xs font-semibold hidden sm:inline'>Page</Typography>
+              <Typography className='text-color text-xs font-semibold'>{currentPage} of {totalPages}</Typography>
+            </div>
+            <div className={`flex gap-2 sm:gap-4 items-center`}>
+               <Typography className="text-xs font-semibold text-color-secondary w-full text-right">Participant Count: {filteredParticipants.length}</Typography>
               <div className="flex gap-1 items-center">
-                <span className="text-xs text-color-secondary">Show</span>
+                <span className="hidden sm:inline text-xs text-color-secondary">Show</span>
                 <select
                   value={itemsPerPage}
                   onChange={(e) => {
@@ -192,7 +321,7 @@ function Events() {
                   <option value={15}>15</option>
                   <option value={20}>20</option>
                 </select>
-                <span className="text-xs text-color-secondary">entries</span>
+                <span className="hidden sm:inline text-xs text-color-secondary">entries</span>
               </div>
               <button
                 onClick={(e) => {e.stopPropagation(); handlePageChange(currentPage - 1)}}
