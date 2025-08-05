@@ -188,27 +188,26 @@ function Events() {
             </div>
           </div>
 
-          {window.innerWidth < 640 && (
-            <div className="h-10 border-b border-gray-700 px-3 flex items-center">
-              <div className="flex w-full overflow-x-auto scrollbar-hide whitespace-nowrap gap-2 hide-scrollbar">
-                {selectedEvent && (
-                  <>
-                    {filterChips.map((chip, index) => (
-                      <div
-                        key={index}
-                        className="flex-shrink-0 flex items-center gap-1 bg-gray-700 text-color px-2 py-1 rounded-md text-xs cursor-pointer hover:bg-gray-600"
-                      >
-                        <span className="truncate">{chip.label}</span>
-                        <button onClick={chip.onRemove}>
-                          <X size={14} className="text-color-secondary hover:text-red-400" />
-                        </button>
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
+          {selectedDepartment || selectedCourse || selectedYear || selectedSection || selectedStatus ?
+            <div className=" sm:hidden h-10 border-b border-gray-700 px-3 flex items-center">
+            <div className="flex w-full overflow-x-auto scrollbar-hide whitespace-nowrap gap-2 hide-scrollbar">
+              {selectedEvent && (
+                <>
+                  {filterChips.map((chip, index) => (
+                    <div
+                      key={index}
+                      className="flex-shrink-0 flex items-center gap-1 bg-gray-700 text-color px-2 py-1 rounded-md text-xs cursor-pointer hover:bg-gray-600"
+                    >
+                      <span className="truncate">{chip.label}</span>
+                      <button onClick={chip.onRemove}>
+                        <X size={14} className="text-color-secondary hover:text-red-400" />
+                      </button>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
-          )}
+          </div> : null}
 
 
           {/* Filters */}
@@ -252,8 +251,7 @@ function Events() {
                 <div className="flex gap-2">
                     {selectedEvent && (
                       <>
-                        {window.innerWidth > 640 && (
-                          <div className="flex gap-2 items-center">
+                        <div className="hidden sm:flex gap-2 items-center">
                           {filterChips.map((chip, index) => (
                             <div
                               key={index}
@@ -266,7 +264,7 @@ function Events() {
                             </div>
                           ))}
                           {/* <Typography className='text-color text-xs font-semibold'>Filter:</Typography> */}
-                        </div>)}
+                        </div>
                         <ParticipantFilterButton
                           selectedDepartment={selectedDepartment}
                           setSelectedDepartment={setSelectedDepartment}
