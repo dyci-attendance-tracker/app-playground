@@ -9,7 +9,7 @@ import { BoxIcon, EllipsisVertical } from 'lucide-react';
 import ActionsMenu from '../../../components/common/ActionsMenu';
 
 function EventViewAll() {
-  const { currentPage, itemsPerPage } = useOutletContext();
+  const { currentPage, itemsPerPage, filteredEvents } = useOutletContext();
   const { events, fetchEvents, isLoading } = useEvents();
   const containerRef = useRef(null);
 
@@ -24,7 +24,7 @@ function EventViewAll() {
     fetchEvents();
   }, [currentWorkspace]);
 
-  const paginatedEvents = events.slice(
+  const paginatedEvents = filteredEvents.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );

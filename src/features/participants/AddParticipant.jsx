@@ -2,11 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { BoxIcon, UserIcon, UserPlus2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from "@material-tailwind/react";
-import { useProfiles } from '../../contexts/ProfilesContext';
 import { toast } from 'sonner';
+import { useParticipants } from '../../contexts/ParticipantsContext';
+import useDebounce from '../../hooks/useDebounce';
+import { useProfiles } from '../../contexts/ProfilesContext';
+import { doc } from 'firebase/firestore';
+import { db } from '../../services/firebase';
+import { useWorkspace } from '../../contexts/WorkspaceContext';
 
-function CreateProfile({ open, onClose }) {
+function AddParticipant({ open, onClose, eventId  }) {
+    const { addParticipant } = useParticipants();
     const { createProfile } = useProfiles();
+    const { currentWorkspace } = useWorkspace();
 
     const FULLNAME_MAX = 100;
 
@@ -35,6 +42,29 @@ function CreateProfile({ open, onClose }) {
     const [phoneError, setPhoneError] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+
+    const [matchedProfile, setMatchedProfile] = useState(null);
+    const debouncedID = useDebounce(IDNumber, 500);
+
+    const { findProfileByIDNumber } = useParticipants();
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (!debouncedID.trim()) {
+                setMatchedProfile(null);
+                return;
+            }
+
+            const profile = await findProfileByIDNumber(debouncedID);
+            if (profile) {
+                setMatchedProfile(profile);
+            } else {
+                setMatchedProfile(null);
+            }
+        };
+
+        fetchProfile();
+    }, [debouncedID, findProfileByIDNumber]);
 
   useEffect(() => {
     const handleEsc = (e) => e.key === 'Escape' && onClose();
@@ -139,7 +169,7 @@ function CreateProfile({ open, onClose }) {
     return isValid;
   };
 
-  const handleCreate = async () => {
+  const handleAdd = async () => {
     if (!validateFields()) {
       setError('Please fix the errors');
       return;
@@ -147,23 +177,56 @@ function CreateProfile({ open, onClose }) {
 
     setIsLoading(true);
     try {
-      await createProfile({
-        IDNumber,
-        firstName,
-        lastName,
-        middleName,
-        email,
-        phone,
-        collegeDepartment,
-        course,
-        yearLevel,
-        section
-      });
-      toast.success('Profile created successfully!');
-      onClose();
+        if (matchedProfile) {
+            await addParticipant(eventId, matchedProfile.id, {
+                IDNumber,
+                firstName,
+                lastName,
+                middleName,
+                email,
+                phone,
+                collegeDepartment,
+                course,
+                yearLevel,
+                section,
+                status: 'registered'
+            });
+            toast.success('Participant added successfully!');
+            onClose();
+        }else{
+            const newProfileID = await createProfile({
+                IDNumber,
+                firstName,
+                lastName,
+                middleName,
+                email,
+                phone,
+                collegeDepartment,
+                course,
+                yearLevel,
+                section,
+            })
+            toast.success('Profile created successfully!');
+            
+            await addParticipant(eventId, newProfileID, {
+                IDNumber,
+                firstName,
+                lastName,
+                middleName,
+                email,
+                phone,
+                collegeDepartment,
+                course,
+                yearLevel,
+                section,
+                status: 'registered'
+            });
+            toast.success('Participant added successfully!');
+            onClose();
+        }
     } catch (err) {
       console.error(err);
-      toast.error(err.message || "Failed to create profile.");
+      toast.error(err.message || "Failed to add participant.");
     } finally {
       setIsLoading(false);
     }
@@ -189,7 +252,7 @@ function CreateProfile({ open, onClose }) {
           >
             {/* Header */}
                 <div className="flex justify-between items-center py-4  border-gray-700">
-                    <h2 className="text-xs font-semibold">Create Profile</h2>
+                    <h2 className="text-xs font-semibold">Add Participant</h2>
                     <motion.button
                         onClick={onClose}
                         className="text-gray-400 hover:text-white"
@@ -206,7 +269,7 @@ function CreateProfile({ open, onClose }) {
                     <div className='p-1 bg-gray-700 rounded w-fit'><UserPlus2 size={20} className='text-gray-500'/></div>
                     <h2 className="text-xs font-semibold w-full text-left">Personal Information</h2>
                     {/* ID Number */}
-                    <div>
+                    <div className='flex justify-between w-full'>
                         <textarea
                         rows={1}
                         type="text"
@@ -222,6 +285,41 @@ function CreateProfile({ open, onClose }) {
                             <span className="text-red-500 text-xs">{IDNumberError}</span>
                           )}
                         </div>
+                        {matchedProfile && (
+                        <div className="flex justify-end mb-2">
+                            <button
+                            onClick={() => {
+                                const {
+                                IDNumber,
+                                firstName,
+                                lastName,
+                                middleName,
+                                email,
+                                phone,
+                                collegeDepartment,
+                                course,
+                                yearLevel,
+                                section
+                                } = matchedProfile;
+
+                                setIDNumber(IDNumber || '');
+                                setFirstName(firstName || '');
+                                setLastName(lastName || '');
+                                setMiddleName(middleName || '');
+                                setEmail(email || '');
+                                setPhone(phone || '');
+                                setCollegeDepartment(collegeDepartment || '');
+                                setCourse(course || '');
+                                setYearLevel(yearLevel || '');
+                                setSection(section || '');
+                                toast.success("Profile information filled from existing record.");
+                            }}
+                            className="text-xs px-2 bg-green-600 hover:bg-green-700 rounded text-white whitespace-nowrap"
+                            >
+                            Match found — Autofill?
+                            </button>
+                        </div>
+                        )}
                     </div>
 
 
@@ -234,6 +332,7 @@ function CreateProfile({ open, onClose }) {
                         placeholder="First Name"
                         className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                         value={firstName}
+                        disabled={matchedProfile}
                         onChange={(e) => {
                           setFirstName(e.target.value);
                         }}
@@ -254,6 +353,7 @@ function CreateProfile({ open, onClose }) {
                         placeholder="Last Name"
                         className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                         value={lastName}
+                        disabled={matchedProfile}
                         onChange={(e) => {
                           setLastName(e.target.value);
                         }}
@@ -274,6 +374,7 @@ function CreateProfile({ open, onClose }) {
                         placeholder="Middle Name"
                         className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                         value={middleName}
+                        disabled={matchedProfile}
                         onChange={(e) => {
                           setMiddleName(e.target.value);
                         }}
@@ -293,6 +394,7 @@ function CreateProfile({ open, onClose }) {
                             placeholder="Email"
                             className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                             value={email}
+                            disabled={matchedProfile}
                             onChange={(e) => {
                             setEmail(e.target.value);
                             }}
@@ -309,6 +411,7 @@ function CreateProfile({ open, onClose }) {
                             placeholder="Phone"
                             className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                             value={phone}
+                            disabled={matchedProfile}
                             onChange={(e) => {
                             setPhone(e.target.value);
                             }}
@@ -329,6 +432,7 @@ function CreateProfile({ open, onClose }) {
                             placeholder="College Department"
                             className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                             value={collegeDepartment}
+                            disabled={matchedProfile}
                             onChange={(e) => setCollegeDepartment(e.target.value)}
                         />
                         {collegeDepartmentError && (
@@ -342,6 +446,7 @@ function CreateProfile({ open, onClose }) {
                                 placeholder="Year Level"
                                 className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                                 value={yearLevel}
+                                disabled={matchedProfile}
                                 onChange={(e) => setYearLevel(e.target.value)}
                             />
                             {yearLevelError && (
@@ -357,6 +462,7 @@ function CreateProfile({ open, onClose }) {
                             placeholder="Course"
                             className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                             value={course}
+                            disabled={matchedProfile}
                             onChange={(e) => setCourse(e.target.value)}
                         />
                         {courseError && (
@@ -370,6 +476,7 @@ function CreateProfile({ open, onClose }) {
                                 placeholder="Section"
                                 className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                                 value={section}
+                                disabled={matchedProfile}
                                 onChange={(e) => setSection(e.target.value)}
                             />
                             {sectionError && (
@@ -377,12 +484,6 @@ function CreateProfile({ open, onClose }) {
                             )}
                         </div>
                     </div>
-
-                    
-
-                    
-
-
                     {/* Global Error */}
                     {error && (
                       <div className="text-red-500 text-xs text-center p-2 bg-red-500/10 rounded">
@@ -402,12 +503,12 @@ function CreateProfile({ open, onClose }) {
                     </button>
                     <button
                       className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleCreate}
+                      onClick={handleAdd}
                       disabled={
                         isLoading
                       }
                     >
-                      {isLoading ? 'Creating...' : 'Create Profile'}
+                      {isLoading ? 'Adding...' : 'Add Participant'}
                     </button>
                 </div>
           </motion.div>
@@ -417,4 +518,4 @@ function CreateProfile({ open, onClose }) {
   );
 }
 
-export default CreateProfile;
+export default AddParticipant;

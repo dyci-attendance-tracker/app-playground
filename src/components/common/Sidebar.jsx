@@ -190,7 +190,7 @@ function Sidebar() {
                                         </Button>
                                     </div>
                                    <div className="flex items-center gap-1 mb-1">
-                                        <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700" onClick={() => navigatePage(`/${currentWorkspace?.url}/profiles`) }>
+                                        <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700" onClick={() => navigatePage(`/${currentWorkspace?.url}/profiles/all`) }>
                                             <UserRoundPen size={16} className="text-color-secondary" />
                                             <p className="text-color text-xs font-semibold">Profiles</p>
                                         </Button>

@@ -1,34 +1,71 @@
 import { useEffect, useState } from 'react';
-import { Box, PanelRight, Plus, Upload } from 'lucide-react';
+import { Box, PanelRight, Plus, Search, Upload } from 'lucide-react';
 import { useSidebar } from '../../contexts/SidebarContext';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import { Typography, Chip, Button } from '@material-tailwind/react';
-import { Outlet } from 'react-router';
+import { Outlet, useParams } from 'react-router';
 import CopyLinkButton from '../../components/common/CopyLinkButton';
 import ProjectFilterButton from '../../components/common/ProjectFilterButton';
 import { useProfiles } from '../../contexts/ProfilesContext';
 import { navigatePage } from '../../utils/navigation';
 import CreateProfile from './CreateProfile';
 import ImportProfiles from './components/ImportProfiles';
+import ProfileActionMenu from '../../components/common/ProfileActionMenu';
 
 function Profiles() {
-  const { currentWorkspace } = useWorkspace();
-  const { profiles } = useProfiles();
+    const { profileID } = useParams();
+    const { currentWorkspace } = useWorkspace();
+    const { profiles, fetchProfiles, isLoading } = useProfiles();
 
-  const [openModal, setOpenModal] = useState(false);
-  const [openImportModal, setOpenImportModal] = useState(false);
-  const { setIsLeftSidebarOpen, setIsMobileOpen } = useSidebar();
+    const [selectedProfile, setSelectedProfile] = useState(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [openModal, setOpenModal] = useState(false);
+    const [openImportModal, setOpenImportModal] = useState(false);
+    const { setIsLeftSidebarOpen, setIsMobileOpen } = useSidebar();
 
-  const totalPages = Math.ceil(profiles.length / itemsPerPage);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredProfiles = (profiles ?? []).filter((profile) =>
+        profile.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        profile.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        profile.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        profile.IDNumber?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        profile.phone?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        profile.collegeDepartment?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        profile.course?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        profile.yearLevel?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        profile.section?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+
+    const totalPages = Math.ceil(filteredProfiles.length / itemsPerPage);
+
+    useEffect(() => {
+        fetchProfiles();
+    }, [currentWorkspace]);
+
+    useEffect(() => {
+        if (location.pathname.includes(`/profiles/all`)) {
+            setSelectedProfile("");
+        }
+    }, [location.pathname]);
+
+    const handlePageChange = (page) => {
+        if (page >= 1 && page <= totalPages) {
+        setCurrentPage(page);
+        }
+    };
+
+    // Get event when events change or eventId changes
+    useEffect(() => {
+        const found = profiles.find(e => e.id === profileID);
+        if (found) {
+            setSelectedProfile(found);
+        }
+    }, [profiles, profileID]);
 
   return (
     <>
@@ -56,7 +93,7 @@ function Profiles() {
                         </span>
                     }
                     className="bg-gray-700 text-color px-2 py-1 hidden sm:block rounded-md cursor-pointer hover:bg-gray-600"
-                    onClick={() => navigatePage(`/${currentWorkspace.url}/profiles`)}
+                    onClick={() => navigatePage(`/${currentWorkspace.url}/profiles/all`)}
                     />
                 </div>
                 <div className="flex items-center gap-2">
@@ -73,14 +110,40 @@ function Profiles() {
                 </div>
             </div>
 
-            {/* Filter Bar
-            <div className="h-10 border-b border-gray-700 px-3 flex items-center justify-between">
-                <ProjectFilterButton />
-            </div> */}
+            {/* Filters */}
+            <div className="h-10 border-b border-gray-700 px-3 flex items-center justify-between sm:justify-end">
+                <div className={`flex gap-2 justify-between items-center w-full `}>
+                    {!selectedProfile && (<div className="relative w-full max-w-xs">
+                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <Search size={16} className="text-gray-500" />
+                        </div>
+                        <input
+                        type="text"
+                        placeholder="Search profiles..."
+                        value={searchQuery}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="pl-10 w-full px-3 py-1.5 rounded-md secondary border border-gray-700 text-xs text-color placeholder:text-gray-500 focus:outline-none"
+                        />
+                    </div>)}
+                    <ProjectFilterButton></ProjectFilterButton>
+                    {selectedProfile && (
+                    <div className="flex gap-2 items-center justify-between">
+                            <div className="flex gap-2 ml-auto">
+                                <ProfileActionMenu
+                                    selectedProfile={selectedProfile}
+                                />
+                            </div>
+                    </div>
+                    )}
+                </div>
+            </div>
 
             {/* Table Content */}
             <div className="flex-1 overflow-x-auto hide-scrollbar">
-                <Outlet context={{ currentPage, itemsPerPage }} />
+                <Outlet context={{ currentPage, itemsPerPage, filteredProfiles }} />
             </div>
 
             {/* Pagination */}

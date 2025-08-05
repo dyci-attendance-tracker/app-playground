@@ -37,6 +37,7 @@ import { ParticipantsProvider } from './contexts/ParticipantsContext.jsx';
 import { ProfilesProvider } from './contexts/ProfilesContext.jsx';
 import Profiles from './features/profiles/Profiles.jsx';
 import ProfileViewAll from './features/profiles/components/ProfileViewAll.jsx';
+import ProfileView from './features/profiles/components/ProfileView.jsx';
 
 const router = createBrowserRouter([
   {
@@ -96,7 +97,11 @@ const router = createBrowserRouter([
               {
                 path: "all",
                 element: <ProtectedRoute><ProfileViewAll /></ProtectedRoute>
-              }
+              },
+              {
+                path: ":profileID",
+                element: <ProtectedRoute><ProfileView /></ProtectedRoute>
+              },
             ]
           }
         ]
