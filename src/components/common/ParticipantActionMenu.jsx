@@ -93,14 +93,14 @@ export default function ParticipantActionMenu({ selectedParticipant }) {
                 onClick={(e) => {e.stopPropagation(); handleStatusChange('attended')}}
                 className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
               >
-                <CircleDashed size={16} className="text-color-secondary" />
+                <CircleCheckIcon size={16} className="text-green-600" />
                 Attended
               </MenuItem>
               <MenuItem
                 onClick={(e) => {e.stopPropagation(); handleStatusChange('registered')}}
                 className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
               >
-                <CircleCheckIcon size={16} className="text-green-400" />
+                <CircleDashed size={16} className="text-color-secondary" />
                 Registered
               </MenuItem>
               <MenuItem

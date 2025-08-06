@@ -168,14 +168,14 @@ function Profiles() {
                     <span className="text-xs text-color-secondary">entries</span>
                 </div>
                 <button
-                    onClick={(e) => { e.stopPropagation(); handlePageChange(currentPage - 1)}}
+                    onClick={(e) => {  handlePageChange(currentPage - 1)}}
                     disabled={currentPage === 1}
                     className="bg-gray-700 text-color px-3 py-2 text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
                 >
                     Prev
                 </button>
                 <button
-                    onClick={(e) => { e.stopPropagation(); handlePageChange(currentPage + 1)}}
+                    onClick={(e) => {  handlePageChange(currentPage + 1)}}
                     disabled={currentPage === totalPages || currentPage > totalPages}
                     className="bg-gray-700 text-color px-3 py-2 text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
                 >

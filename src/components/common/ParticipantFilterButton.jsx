@@ -196,7 +196,7 @@ export default function ParticipantFilterButton({
               <MenuItem
                 key={status}
                 onClick={(e) => {
-                  e.stopPropagation();
+                  
                   setSelectedStatus(status);
                 }}
                 className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"

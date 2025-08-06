@@ -9,7 +9,7 @@ import { navigatePage } from '../../utils/navigation'
 import CopyLinkButton from '../../components/common/CopyLinkButton'
 import ParticipantFilterButton from '../../components/common/ParticipantFilterButton'
 import CreateEvent from './CreateEvent'
-import ActionsMenu from '../../components/common/ActionsMenu'
+import EventActionsMenu from '../../components/common/EventActionsMenu'
 import { useEvents } from '../../contexts/EventContext'
 import { useParticipants } from '../../contexts/ParticipantsContext'
 import AddParticipant from '../participants/AddParticipant'
@@ -278,7 +278,7 @@ function Events() {
                           setSelectedStatus={setSelectedStatus}
                         />
                         <div className="flex gap-2 ml-auto">
-                        <ActionsMenu selectedEvent={selectedEvent} />
+                        <EventActionsMenu selectedEvent={selectedEvent} />
                         </div>
                       </>
                     )}
@@ -322,14 +322,14 @@ function Events() {
                 <span className="hidden sm:inline text-xs text-color-secondary">entries</span>
               </div>
               <button
-                onClick={(e) => {e.stopPropagation(); handlePageChange(currentPage - 1)}}
+                onClick={(e) => { handlePageChange(currentPage - 1)}}
                 disabled={currentPage === 1}
                 className="bg-gray-700 text-color px-3 py-2 text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
               >
                 Prev
               </button>
               <button
-                onClick={(e) => {e.stopPropagation(); handlePageChange(currentPage + 1)}}
+                onClick={(e) => { handlePageChange(currentPage + 1)}}
                 disabled={currentPage === totalPages || currentPage > totalPages}
                 className="bg-gray-700 text-color px-3 py-2 text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
               >

@@ -9,6 +9,7 @@
     setDoc,
     query,
     where,
+    writeBatch,
     } from 'firebase/firestore';
     import { db } from '../services/firebase';
     import { useAuth } from './AuthContext';
@@ -235,14 +236,14 @@
             }
         };
 
-        const updateParticipantStatus = async (eventId, participantId, status) => {
+        const updateParticipantStatus = async (workspaceId, eventId, participantId, status) => {
             if (!eventId || !participantId || !status || !currentWorkspace?.id) return;
 
             try {
                 const participantRef = doc(
                     db,
                     'workspaces',
-                    currentWorkspace.id,
+                    currentWorkspace?.id || workspaceId,
                     'events',
                     eventId,
                     'participants',
@@ -256,8 +257,88 @@
                 throw err;
             }
         };
+        
+        const clearList = async (eventId) => {
+            if (!eventId) return;
+        
+            try {
+                const participantsCollectionRef = collection(
+                db,
+                "workspaces",
+                currentWorkspace.id,
+                "events",
+                eventId,
+                "participants"
+                );
+        
+                const snapshot = await getDocs(participantsCollectionRef);
+                const batch = writeBatch(db);
+        
+                snapshot.forEach((doc) => {
+                batch.delete(doc.ref);
+                });
+        
+                await batch.commit();
+                await fetchParticipants(eventId);
+            } catch (err) {
+                console.error("Error removing participants:", err);
+                throw err;
+            }
+        };
+        
+        const resetList = async (eventId) => {
+            if (!eventId) return;
+        
+            try {
+                const participantsCollectionRef = collection(
+                db,
+                "workspaces",
+                currentWorkspace.id,
+                "events",
+                eventId,
+                "participants"
+                );
+        
+                const snapshot = await getDocs(participantsCollectionRef);
+                const batch = writeBatch(db);
+        
+                snapshot.forEach((doc) => {
+                batch.update(doc.ref, { status: "registered" });
+                });
+        
+                await batch.commit();
+                await fetchParticipants(eventId);
+            } catch (err) {
+                console.error("Error resetting participant statuses:", err);
+                throw err;
+            }
+        };
 
+        const getParticipantsByEvent = async (workspaceID, eventID) => {
+            try {
+                const participantsRef = collection(
+                db,
+                "workspaces",
+                workspaceID,
+                "events",
+                eventID,
+                "participants"
+                );
 
+                const snapshot = await getDocs(participantsRef);
+
+                const participants = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data()
+                }));
+
+                return participants;
+            } catch (error) {
+                console.error("Error fetching participants:", error);
+                return [];
+            }
+        };
+    
         return (
             <ParticipantsContext.Provider
             value={{
@@ -269,7 +350,10 @@
                 removeParticipant,
                 findProfileByIDNumber,
                 importParticipantsFromExcel,
-                updateParticipantStatus
+                updateParticipantStatus,
+                clearList,
+                resetList,
+                getParticipantsByEvent
             }}
             >
             {children}

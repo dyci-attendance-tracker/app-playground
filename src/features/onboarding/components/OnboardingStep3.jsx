@@ -31,7 +31,7 @@ function OnboardingStep3() {
             We're excited to have you on the platform. Let's get started!
         </p>
             <button
-                onClick={(e) => {e.stopPropagation();handleNext()}}
+                onClick={(e) => {handleNext()}}
                 className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition w-full sm:w-auto"
             >
                 Let's Go!

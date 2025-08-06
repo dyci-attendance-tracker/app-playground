@@ -6,7 +6,7 @@ import { useWorkspace } from '../../../contexts/WorkspaceContext';
 import { useEvents } from '../../../contexts/EventContext';
 import dayjs from 'dayjs';
 import { BoxIcon, EllipsisVertical } from 'lucide-react';
-import ActionsMenu from '../../../components/common/ActionsMenu';
+import EventActionsMenu from '../../../components/common/EventActionsMenu';
 
 function EventViewAll() {
   const { currentPage, itemsPerPage, filteredEvents } = useOutletContext();
@@ -37,7 +37,7 @@ function EventViewAll() {
           <div className="w-full overflow-x-auto hide-scrollbar">
             <div className="min-w-[750px]">
               {/* Table Header */}
-              <div className="grid grid-cols-[20px_1.5fr_2fr_150px_120px_140px] text-left gap-4 px-4 py-2 text-xs font-semibold text-color-secondary border-b border-gray-700">
+              <div className="grid grid-cols-[20px_1.5fr_2fr_150px_120px] text-left gap-4 px-4 py-2 text-xs font-semibold text-color-secondary border-b border-gray-700">
                 <span className="w-fit"></span>
                 <span>Event Name</span>
                 <span>Summary</span>
@@ -58,7 +58,7 @@ function EventViewAll() {
                   {paginatedEvents.map((event) => (
                     <div
                       key={event.id}
-                      className="grid grid-cols-[20px_1.5fr_2fr_150px_120px_140px] gap-4 px-4 py-3 text-left text-sm hover:bg-gray-800 transition-all cursor-pointer group"
+                      className="grid grid-cols-[20px_1.5fr_2fr_150px_120px] gap-4 px-4 py-3 text-left text-sm hover:bg-gray-800 transition-all cursor-pointer group"
                       onClick={() => {navigate(`/${currentWorkspace.url}/events/${event.id}`)}}
                     >
                       <div className="w-fit">
@@ -70,11 +70,6 @@ function EventViewAll() {
                         {dayjs(event.date).format('MMM D, YYYY')}
                       </div>
                       <div className="text-color-secondary">{event.checkInCount || '0/0'}</div>
-                      <div className="flex items-center gap-2 justify-center pr-7">
-                        <ActionsMenu
-                          selectedEvent={event}
-                        />
-                      </div>
                     </div>
                   ))}
                 </div>

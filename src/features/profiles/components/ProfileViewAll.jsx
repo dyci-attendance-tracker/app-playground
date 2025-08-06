@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useWorkspace } from '../../../contexts/WorkspaceContext';
 import { BoxIcon, User2Icon, UserIcon } from 'lucide-react';
-import ActionsMenu from '../../../components/common/ActionsMenu';
 import { useProfiles } from '../../../contexts/ProfilesContext';
 import ProfileActionMenu from '../../../components/common/ProfileActionMenu';
 
@@ -29,7 +28,7 @@ function ProfileViewAll() {
           <div className="w-full overflow-x-auto hide-scrollbar">
             <div className="min-w-[1000px]">
               {/* Table Header */}
-              <div className="grid grid-cols-[20px_2.5fr_4fr_4fr_3fr_3.5fr_3.5fr_2.5fr_80px] text-left gap-4 px-4 py-2 text-xs font-semibold text-color-secondary border-b border-gray-700">
+              <div className="grid grid-cols-[20px_2.5fr_4fr_4fr_3fr_3.5fr_3.5fr_2.5fr] text-left gap-4 px-4 py-2 text-xs font-semibold text-color-secondary border-b border-gray-700">
                 <span></span>
                 <span>#</span>
                 <span>Full Name</span>
@@ -53,7 +52,7 @@ function ProfileViewAll() {
                   {paginatedProfiles.map((profile) => (
                     <div
                       key={profile.id}
-                      className="grid grid-cols-[20px_2.5fr_4fr_4fr_3fr_3.5fr_3.5fr_2.5fr_80px] gap-4 px-4 py-3 text-left text-sm hover:bg-gray-800 transition-all cursor-pointer group"
+                      className="grid grid-cols-[20px_2.5fr_4fr_4fr_3fr_3.5fr_3.5fr_2.5fr] gap-4 px-4 py-3 text-left text-sm hover:bg-gray-800 transition-all cursor-pointer group"
                       onClick={() => navigate(`/${currentWorkspace.url}/profiles/${profile.id}`)}
                     >
                       <div><User2Icon size={18} className="text-gray-500" /></div>
@@ -66,9 +65,6 @@ function ProfileViewAll() {
                       <div className="truncate text-color-secondary">{profile.collegeDepartment}</div>
                       <div className="truncate text-color-secondary">{profile.course}</div>
                       <div className="text-color-secondary">{profile.yearLevel} - {profile.section}</div>
-                      <div className="flex items-center justify-center gap-2 pr-4">
-                        <ProfileActionMenu selectedProfile={profile} />
-                      </div>
                     </div>
                   ))}
                 </div>

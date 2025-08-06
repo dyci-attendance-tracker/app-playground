@@ -38,6 +38,8 @@ import { ProfilesProvider } from './contexts/ProfilesContext.jsx';
 import Profiles from './features/profiles/Profiles.jsx';
 import ProfileViewAll from './features/profiles/components/ProfileViewAll.jsx';
 import ProfileView from './features/profiles/components/ProfileView.jsx';
+import AddParticipantPage from './features/public/AddParticipantPage.jsx';
+import PublicCheckInPage from './features/public/PublicCheckInPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -109,6 +111,14 @@ const router = createBrowserRouter([
       {
         path: "attendance-tracker/workspace/create",
         element: <ProtectedRoute><CreateWorkspace /></ProtectedRoute>,
+      },
+      {
+        path: "public/:workspaceID/:eventID/register",
+        element: <AddParticipantPage/>
+      },
+      {
+        path: "public/:workspaceID/:eventID/check-in",
+        element: <PublicCheckInPage />
       },
       {
         path: "*", // Catch-all route (404)

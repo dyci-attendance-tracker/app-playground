@@ -7,10 +7,12 @@ import {
   deleteDoc,
   getDocs,
   serverTimestamp,
+  getDoc,
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
 import { useWorkspace } from './WorkspaceContext';
+import { useParams } from 'react-router';
 
 const EventContext = createContext();
 
@@ -37,6 +39,36 @@ export function EventProvider({ children }) {
       setIsLoading(false);
     }
   };
+
+  const fetchEventById = async (eventId, workspaceID) => {
+    if (!eventId || !workspaceID) {
+      console.warn("Missing eventId or currentWorkspace.id", { eventId, workspaceID });
+      return null;
+    }
+
+    setIsLoading(true);
+    try {
+      console.log(`Fetching event at: workspaces/${workspaceID}/events/${eventId}`);
+
+      const eventDocRef = doc(db, 'workspaces', workspaceID, 'events', eventId);
+      const docSnap = await getDoc(eventDocRef);
+
+      if (docSnap.exists()) {
+        const eventData = { id: docSnap.id, ...docSnap.data() };
+        console.log("Fetched Event Data:", eventData);
+        return eventData;
+      } else {
+        console.warn('No event found with this ID.');
+        return null;
+      }
+    } catch (err) {
+      console.error('Error fetching event by ID:', err);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
 
   const createEvent = async (eventData) => {
     if (!eventData || !currentUser || !currentWorkspace?.id) return;
@@ -107,7 +139,6 @@ export function EventProvider({ children }) {
     }
   };
 
-
   useEffect(() => {
     fetchEvents();
     console.log('Events fetched:', events);
@@ -119,10 +150,11 @@ export function EventProvider({ children }) {
         events,
         isLoading,
         fetchEvents,
+        fetchEventById,
         createEvent,
         updateEvent,
         duplicateEvent,
-        deleteEvent,
+        deleteEvent
       }}
     >
       {children}

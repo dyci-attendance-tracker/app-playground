@@ -34,7 +34,7 @@ function OnboardingStep1() {
         We're excited to have you here. Let’s get you set up in just a few steps.
       </p>
       <button
-        onClick={(e) => {e.stopPropagation();handleNext()}}
+        onClick={(e) => {handleNext()}}
         className="px-5 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white text-sm sm:text-base rounded-xl hover:bg-blue-700 transition"
       >
         Get Started
