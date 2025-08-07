@@ -9,12 +9,12 @@ function ProfileView() {
   const { currentPage, itemsPerPage } = useOutletContext();
   const { profileID } = useParams();
   const { profiles, fetchProfiles, isLoading } = useProfiles();
-  const {currentWorkspace} = useWorkspace();
+  const {workspaceID} = useParams()
 
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    fetchProfiles(currentWorkspace.id);
+    fetchProfiles(workspaceID);
   }, []);
 
   useEffect(() => {

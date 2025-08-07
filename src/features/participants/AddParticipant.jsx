@@ -9,6 +9,7 @@ import { useProfiles } from '../../contexts/ProfilesContext';
 import { doc } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
+import { useParams } from 'react-router';
 
 const DEPARTMENTS = JSON.parse(import.meta.env.VITE_DEPARTMENTS_JSON || '{}');
 const YEARS = (import.meta.env.VITE_YEARS || '').split(',').map(s => s.trim());
@@ -17,7 +18,7 @@ const SECTIONS = (import.meta.env.VITE_SECTIONS || '').split(',').map(s => s.tri
 function AddParticipant({ open, onClose, eventId  }) {
     const { addParticipant } = useParticipants();
     const { createProfile } = useProfiles();
-    const { currentWorkspace } = useWorkspace();
+    const {workspaceID} = useParams()
 
     const FULLNAME_MAX = 100;
 
@@ -59,7 +60,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                 return;
             }
 
-            const profile = await findProfileByIDNumber(currentWorkspace.id ,debouncedID);
+            const profile = await findProfileByIDNumber(workspaceID ,debouncedID);
             if (profile) {
                 setMatchedProfile(profile);
             } else {
@@ -183,7 +184,7 @@ function AddParticipant({ open, onClose, eventId  }) {
     setIsLoading(true);
     try {
         if (matchedProfile) {
-            await addParticipant(currentWorkspace.id ,eventId, matchedProfile.id, {
+            await addParticipant(workspaceID ,eventId, matchedProfile.id, {
                 IDNumber,
                 firstName,
                 lastName,
@@ -199,7 +200,7 @@ function AddParticipant({ open, onClose, eventId  }) {
             toast.success('Participant added successfully!');
             onClose();
         }else{
-            const newProfileID = await createProfile(currentWorkspace.id,{
+            const newProfileID = await createProfile(workspaceID,{
                 IDNumber,
                 firstName,
                 lastName,
@@ -213,7 +214,7 @@ function AddParticipant({ open, onClose, eventId  }) {
             })
             toast.success('Profile created successfully!');
             
-            await addParticipant(currentWorkspace.id, eventId, newProfileID, {
+            await addParticipant(workspaceID, eventId, newProfileID, {
                 IDNumber,
                 firstName,
                 lastName,

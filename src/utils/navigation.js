@@ -29,7 +29,7 @@ export async function navigatePage(url) {
   }
 }
 
-export async function changeWorkspace(workspaceURL) {
+export async function changeWorkspace(workspaceID) {
   if (!navigateFn || !setLoadingFn || !authContext || !workspaceContext) {
     console.error("Navigation not properly initialized");
     return;
@@ -40,10 +40,10 @@ export async function changeWorkspace(workspaceURL) {
 
   setLoadingFn(true);
   try {
-    await updateUserWorkspaceURL(workspaceURL);
-    currentUser.workspaceURL = workspaceURL;
+    await updateUserWorkspaceURL(workspaceID);
+    currentUser.workspaceID = workspaceID;
     await fetchWorkspaces();
-    navigateFn(`/${workspaceURL}`);
+    navigateFn(`/${workspaceID}`);
   } catch (error) {
     console.error("Failed to switch workspace:", error);
   } finally {

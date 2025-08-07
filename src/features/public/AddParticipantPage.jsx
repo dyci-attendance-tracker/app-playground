@@ -8,6 +8,7 @@ import { useParams } from 'react-router';
 import { useEvents } from '../../contexts/EventContext';
 import { Typography } from '@material-tailwind/react';
 import { ChevronDown } from 'lucide-react';
+import dayjs from 'dayjs';
 
 const DEPARTMENTS = JSON.parse(import.meta.env.VITE_DEPARTMENTS_JSON || '{}');
 const YEARS = (import.meta.env.VITE_YEARS || '').split(',').map(s => s.trim());
@@ -213,7 +214,10 @@ function AddParticipantPage() {
             <div className='flex justify-center items-center px-4 sm:px-10 w-full h-full'>
                 <div className='flex flex-col items-center gap-5 w-full max-w-2xl h-full'>
                     <div className='flex flex-col justify-center items-center gap-4 text-center'>
-                        <p className='text-color text-2xl font-semibold'>{event?.name || ""}</p>
+                        <div>
+                            <p className='text-color text-2xl font-semibold'>{event?.name || ""}</p>
+                            <Typography className="text-sm text-color-secondary">When: {dayjs(event?.date).format('MM DD, YYYY')}</Typography>
+                        </div>
                         <p className='text-color-secondary text-sm font-semibold'>
                             {event?.description || ""}
                         </p>

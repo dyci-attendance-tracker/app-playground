@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { useWorkspace } from '../../../contexts/WorkspaceContext';
 import { BoxIcon, User2Icon, UserIcon } from 'lucide-react';
 import { useProfiles } from '../../../contexts/ProfilesContext';
@@ -10,11 +10,11 @@ function ProfileViewAll() {
   const { profiles, fetchProfiles, isLoading } = useProfiles();
   const containerRef = useRef(null);
   const navigate = useNavigate();
-  const { currentWorkspace } = useWorkspace();
+  const {workspaceID} = useParams()
 
   useEffect(() => {
-    fetchProfiles(currentWorkspace.id); // assumes workspace-aware fetching inside
-  }, [currentWorkspace]);
+    fetchProfiles(workspaceID); // assumes workspace-aware fetching inside
+  }, [workspaceID]);
 
   const paginatedProfiles = filteredProfiles.slice(
     (currentPage - 1) * itemsPerPage,
@@ -53,7 +53,7 @@ function ProfileViewAll() {
                     <div
                       key={profile.id}
                       className="grid grid-cols-[20px_2.5fr_4fr_4fr_3fr_3.5fr_3.5fr_2.5fr] gap-4 px-4 py-3 text-left text-sm hover:bg-gray-800 transition-all cursor-pointer group"
-                      onClick={() => navigate(`/${currentWorkspace.url}/profiles/${profile.id}`)}
+                      onClick={() => navigate(`/${workspaceID}/profiles/${profile.id}`)}
                     >
                       <div><User2Icon size={18} className="text-gray-500" /></div>
                       <div className="text-color-secondary">{profile.IDNumber}</div>

@@ -22,19 +22,19 @@ import { toast } from 'sonner';
 // Replace with your actual context
 import { useParticipants } from '../../contexts/ParticipantsContext';
 import { useParams } from 'react-router';
-import { useWorkspace } from '../../contexts/WorkspaceContext';
 
 export default function ParticipantActionMenu({ selectedParticipant }) {
-  const {currentWorkspace} = useWorkspace();
+  const {workspaceID} = useParams()
   const [openStatusMenu, setOpenStatusMenu] = useState(false);
   const [openRemoveDialog, setOpenRemoveDialog] = useState(false);
-  const { updateParticipantStatus, removeParticipant } = useParticipants();
+  const { updateParticipantStatus, removeParticipant, fetchParticipants} = useParticipants();
   const { eventID } = useParams();
 
   const handleStatusChange = async (status) => {
     try {
-      await updateParticipantStatus(currentWorkspace.id,eventID,selectedParticipant.id, status);
+      await updateParticipantStatus(workspaceID,eventID,selectedParticipant.id, status);
       toast.success(`Status updated to ${status}`);
+      fetchParticipants(workspaceID, eventID);
     } catch (err) {
       console.error(err);
       toast.error('Failed to update status.');
@@ -43,8 +43,9 @@ export default function ParticipantActionMenu({ selectedParticipant }) {
 
   const handleRemove = async () => {
     try {
-      await removeParticipant(currentWorkspace.id, eventID, selectedParticipant.id);
+      await removeParticipant(workspaceID, eventID, selectedParticipant.id);
       toast.success('Participant removed successfully.');
+      fetchParticipants(workspaceID, eventID);
     } catch (err) {
       console.error(err);
       toast.error('Failed to remove participant.');

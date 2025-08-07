@@ -6,11 +6,13 @@ import { Input } from "@material-tailwind/react";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'sonner';
+import { useParams } from 'react-router';
 
 
 function CreateEvent({ open, onClose }) {
+  const {workspaceID} = useParams();
 
-  const { createEvent } = useEvents();
+  const { createEvent, fetchEvents } = useEvents();
   const TITLE_MAX = 80;
   const SUMMARY_MAX = 255;
   const DESCRIPTION_MAX = 1000;
@@ -118,8 +120,9 @@ function CreateEvent({ open, onClose }) {
           date: eventDate
         };
 
-        await createEvent(eventData); // ✅ Use EventContext instead of direct Firestore
+        await createEvent(workspaceID,eventData); // ✅ Use EventContext instead of direct Firestore
         toast.success("Event created successfully!");
+        fetchEvents(workspaceID);
         onClose(); // Close modal
       } catch (err) {
         console.error('Error creating project:', err);

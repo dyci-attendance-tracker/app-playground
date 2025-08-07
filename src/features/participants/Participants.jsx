@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { User, User2, User2Icon } from 'lucide-react';
-import { useWorkspace } from '../../contexts/WorkspaceContext';
 import { useParticipants } from '../../contexts/ParticipantsContext';
 import { Chip, Typography } from '@material-tailwind/react';
 import ProfileActionMenu from '../../components/common/ProfileActionMenu';
@@ -18,16 +17,16 @@ const STATUS_COLORS = {
 
 function Participants({ currentPage, itemsPerPage, filteredParticipants }) {
   const { eventID } = useParams();
-  const { currentWorkspace } = useWorkspace();
+  const {workspaceID} = useParams()
   const { participants, fetchParticipants, isLoading } = useParticipants();
   const containerRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (eventID && currentWorkspace?.id) {
-      fetchParticipants(currentWorkspace?.id, eventID);
+    if (eventID && workspaceID) {
+      fetchParticipants(workspaceID, eventID);
     }
-  }, [eventID, currentWorkspace]);
+  }, [eventID, workspaceID]);
 
   const paginatedParticipants = filteredParticipants.slice(
     (currentPage - 1) * itemsPerPage,
@@ -70,7 +69,7 @@ function Participants({ currentPage, itemsPerPage, filteredParticipants }) {
                             <div
                                 key={profile.id}
                                 className="grid grid-cols-[20px_2.5fr_4fr_4fr_3fr_3.5fr_3.5fr_2.5fr_3fr_100px] gap-4 px-4 py-3 text-left text-sm hover:bg-gray-800 transition-all cursor-pointer group"
-                                onClick={() => navigate(`/${currentWorkspace.url}/profiles/${profile.id}`)}
+                                onClick={() => navigate(`/${workspaceID}/profiles/${profile.id}`)}
                             >
                                 <div><User2Icon size={18} className="text-gray-500" /></div>
                                 <div className="w-fit text-color-secondary">{profile.IDNumber}</div>

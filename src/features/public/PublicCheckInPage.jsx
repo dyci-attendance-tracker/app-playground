@@ -15,10 +15,25 @@
 
     const [eventParticipants, setEventParticipants] = useState();
 
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+
     const getParticipants = async () => {
         const participants = await getParticipantsByEvent(workspaceID, eventID)
         setEventParticipants(participants);
     }
+
+    useEffect(() => {
+    const goOnline = () => setIsOnline(true);
+    const goOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', goOnline);
+    window.addEventListener('offline', goOffline);
+
+    return () => {
+        window.removeEventListener('online', goOnline);
+        window.removeEventListener('offline', goOffline);
+    };
+    }, []);
 
     useEffect(() => {
         getParticipants();
@@ -62,36 +77,84 @@
     };
     }, [isCheckingIn]);
 
+    const saveCheckInOffline = (data) => {
+        const offlineCheckIns = JSON.parse(localStorage.getItem('offlineCheckIns') || '[]');
+        offlineCheckIns.push(data);
+        localStorage.setItem('offlineCheckIns', JSON.stringify(offlineCheckIns));
+    };
+
+
+    useEffect(() => {
+    if (isOnline) {
+        const syncOfflineCheckIns = async () => {
+        const offlineCheckIns = JSON.parse(localStorage.getItem('offlineCheckIns') || '[]');
+        if (offlineCheckIns.length === 0) return;
+
+        for (const checkIn of offlineCheckIns) {
+            try {
+            await updateParticipantStatusByScan(workspaceID, eventID, checkIn.participantId, 'attended');
+            toast.success(`Synced check-in for ${checkIn.IDNumber}`);
+            } catch (err) {
+            console.error("Sync error:", err);
+            toast.error("Failed to sync some check-ins");
+            }
+        }
+
+        // Clear local storage if all succeeded
+        localStorage.removeItem('offlineCheckIns');
+        };
+
+        syncOfflineCheckIns();
+    }
+    }, [isOnline]);
+
 
     const handleCheckIn = async () => {
-        console.log(eventParticipants)
         const participant = eventParticipants.find(p => p.IDNumber === scannedID);
         if (!participant) {
-        toast.error("Participant not found");
-        return;
+            toast.error("Participant not found");
+            return;
         }
 
         if (participant.status === 'attended') {
-        toast.warning("Participant already checked in");
-        return;
+            toast.warning("Participant already checked in");
+            return;
         }
 
-        try {
-        setIsCheckingIn(true);
-        await updateParticipantStatusByScan(workspaceID, eventID, participant.id, 'attended');
-        getParticipants();
-        toast.success("Checked in successfully");
-        } catch (err) {
-        console.error(err);
-        toast.error("Check-in failed");
-        } finally {
-        setIsCheckingIn(false);
+        if (isOnline) {
+            try {
+            setIsCheckingIn(true);
+            await updateParticipantStatusByScan(workspaceID, eventID, participant.id, 'attended');
+            getParticipants();
+            toast.success("Checked in successfully");
+            } catch (err) {
+            console.error(err);
+            toast.error("Check-in failed");
+            } finally {
+            setIsCheckingIn(false);
+            }
+        } else {
+            // Save to localStorage
+            saveCheckInOffline({
+            participantId: participant.id,
+            IDNumber: participant.IDNumber,
+            timestamp: Date.now()
+            });
+            toast.info("No internet: saved check-in locally");
         }
     };
 
+
     return (
         <div className='flex flex-col h-[100vh] overflow-y-auto primary px-4 sm:px-10 py-2'>
-        <div className='flex justify-end items-center px-4 sm:px-10 py-3 w-full'>
+        <div className='flex justify-between items-center px-4 sm:px-10 py-3 w-full'>
+            <p className="text-xs text-gray-400">
+                Status: {isOnline ? (
+                    <span className="text-green-400 font-bold">Online</span>
+                ) : (
+                    <span className="text-red-400 font-bold">Offline</span>
+                )}
+            </p>
             <p className='text-xs text-gray-400 font-semibold'>You are logged in as <span className='text-color'>Guest</span></p>
         </div>
 
@@ -121,6 +184,16 @@
             >
                 {isCheckingIn ? "Checking In..." : "Check In"}
             </button>
+
+            {!isOnline && (
+            <button
+                onClick={() => toast.info("Waiting for connection to sync")}
+                className='bg-green-500 text-white w-full max-w-xs flex items-center justify-center py-2.5 px-4 rounded-md font-medium hover:bg-opacity-90 transition-colors mt-2 disabled:opacity-60'
+            >
+                Offline Mode: Data will sync when back online
+            </button>
+            )}
+
 
             <p className='text-gray-400 text-xs max-w-md text-center mt-4'>
                 Note: Once a participant has checked in, their status will be marked as attended. Duplicate scans will not count.

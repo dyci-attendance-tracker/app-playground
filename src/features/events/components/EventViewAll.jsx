@@ -1,8 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, useParams } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import { useWorkspace } from '../../../contexts/WorkspaceContext';
 import { useEvents } from '../../../contexts/EventContext';
 import dayjs from 'dayjs';
 import { BoxIcon, EllipsisVertical } from 'lucide-react';
@@ -12,17 +11,19 @@ function EventViewAll() {
   const { currentPage, itemsPerPage, filteredEvents } = useOutletContext();
   const { events, fetchEvents, isLoading } = useEvents();
   const containerRef = useRef(null);
+  const {workspaceID} = useParams();
 
   const navigate = useNavigate();
 
   const MIN_WIDTH = 350;
   const MAX_WIDTH = 550;
 
-  const { currentWorkspace } = useWorkspace();
-
   useEffect(() => {
-    fetchEvents(currentWorkspace.id);
-  }, [currentWorkspace]);
+    if (workspaceID) {
+      fetchEvents(workspaceID);
+    }
+  }, [workspaceID]);
+
 
   const paginatedEvents = filteredEvents.slice(
     (currentPage - 1) * itemsPerPage,
@@ -43,7 +44,6 @@ function EventViewAll() {
                 <span>Summary</span>
                 <span>Date of Event</span>
                 <span>Check-In Count</span>
-                <span className="text-center pr-4">Options</span>
               </div>
 
               {/* Table Body */}
@@ -59,7 +59,7 @@ function EventViewAll() {
                     <div
                       key={event.id}
                       className="grid grid-cols-[20px_1.5fr_2fr_150px_120px] gap-4 px-4 py-3 text-left text-sm hover:bg-gray-800 transition-all cursor-pointer group"
-                      onClick={() => {navigate(`/${currentWorkspace.url}/events/${event.id}`)}}
+                      onClick={() => {navigate(`/${workspaceID}/events/${event.id}`)}}
                     >
                       <div className="w-fit">
                         <BoxIcon size={18} className="text-gray-500" />

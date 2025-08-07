@@ -24,7 +24,7 @@ import {
 import { useEvents } from '../../contexts/EventContext';
 import { useParticipants } from '../../contexts/ParticipantsContext';
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import EditEvent from '../../features/events/EditEvent';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -45,14 +45,14 @@ export default function EventActionsMenu({ selectedEvent }) {
 
     const [openModal, setOpenModal] = useState(false);
 
-    const { currentWorkspace } = useWorkspace();
+    const {workspaceID} = useParams()
 
     const navigate = useNavigate();
 
     const [ loading, setLoading ] = useState(false);
 
-    const registrationLink = `${window.location.origin}/public/${currentWorkspace.id}/${selectedEvent.id}/register`;
-    const checkInLink = `${window.location.origin}/public/${currentWorkspace.id}/${selectedEvent.id}/check-in`;
+    const registrationLink = `${window.location.origin}/public/${workspaceID}/${selectedEvent.id}/register`;
+    const checkInLink = `${window.location.origin}/public/${workspaceID}/${selectedEvent.id}/check-in`;
 
 
     const copyToClipboard = async () => {
@@ -63,20 +63,23 @@ export default function EventActionsMenu({ selectedEvent }) {
     const onDuplicate = async () => {
     try {
         setLoading(true);
-        await duplicateEvent(selectedEvent);
+        await duplicateEvent(workspaceID,selectedEvent);
         toast.success("Event duplicated successfully!");
     } catch (err) {
         console.error("Duplication failed", err);
         toast.error("Failed to duplicate event.");
     } finally{
-        setLoading(false);
+        setTimeout(() => {
+            setLoading(false);
+            navigate(`/${workspaceID}/events/all`)
+        }, [200])
     }
     };
 
     const onDelete = async () => {
         try {
             setLoading(true);
-            await deleteEvent(selectedEvent.id);
+            await deleteEvent(workspaceID,selectedEvent.id);
             toast.success("Event deleted successfully!");
         } catch (err) {
             console.error("Delete failed", err);
@@ -85,7 +88,7 @@ export default function EventActionsMenu({ selectedEvent }) {
             setTimeout(() => {
                 setLoading(false);
                 setOpenDeleteDialog(false);
-                navigate(`/${currentWorkspace.url}/events/all`);
+                navigate(`/${workspaceID}/events/all`);
             }, [800])
         }
     };
@@ -93,7 +96,7 @@ export default function EventActionsMenu({ selectedEvent }) {
     const onClearList = async () => {
         try {
             setLoading(true)
-            await clearList(currentWorkspace.id,selectedEvent.id);
+            await clearList(workspaceID,selectedEvent.id);
             toast.success("List cleared successfully!")
         } catch (err) {
             console.error("Clear List failed", err);
@@ -109,7 +112,7 @@ export default function EventActionsMenu({ selectedEvent }) {
     const onResetList = async () => {
         try {
             setLoading(true);
-            await resetList(currentWorkspace.id,selectedEvent.id);
+            await resetList(workspaceID,selectedEvent.id);
             toast.success("List reset successfully!")
         } catch (err) {
             console.error("Clear Reset failed", err);
@@ -123,13 +126,6 @@ export default function EventActionsMenu({ selectedEvent }) {
     }
 
     const onDownload = () => {}
-
-    const onShareCheckInLink = () => {
-        setOpenRegistrationDialog(true);
-    }
-
-    const onShareRegistrationLink = () => {}
-
 
     return (
         <>

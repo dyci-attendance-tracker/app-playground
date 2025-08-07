@@ -4,7 +4,6 @@ import { useSidebar } from '../../contexts/SidebarContext'
 import MainView from './components/EventView'
 import { Outlet, useParams } from 'react-router'
 import { Button, Chip, Typography } from '@material-tailwind/react'
-import { useWorkspace } from '../../contexts/WorkspaceContext'
 import { navigatePage } from '../../utils/navigation'
 import CopyLinkButton from '../../components/common/CopyLinkButton'
 import ParticipantFilterButton from '../../components/common/ParticipantFilterButton'
@@ -16,8 +15,7 @@ import AddParticipant from '../participants/AddParticipant'
 import ImportParticipants from '../participants/ImportParticipants'
 
 function Events() {
-  const { eventID } = useParams();
-  const { currentWorkspace } = useWorkspace();
+  const { eventID, workspaceID } = useParams();
   const { events } = useEvents();
 
   const [openModal, setOpenModal] = useState(false);
@@ -164,7 +162,7 @@ function Events() {
                     </span>
                   }
                   className="bg-gray-700 text-color px-2 py-1 hidden sm:block rounded-md cursor-pointer hover:bg-gray-600"
-                  onClick={() => navigatePage(`/${currentWorkspace.url}/events/all`)}
+                  onClick={() => navigatePage(`/${workspaceID}/events/all`)}
                 />
               </div>
               <div className='flex items-center gap-2'>

@@ -14,7 +14,7 @@ import ProfileActionMenu from '../../components/common/ProfileActionMenu';
 
 function Profiles() {
     const { profileID } = useParams();
-    const { currentWorkspace } = useWorkspace();
+    const {workspaceID} = useParams()
     const { profiles, fetchProfiles, isLoading } = useProfiles();
 
     const [selectedProfile, setSelectedProfile] = useState(null);
@@ -44,8 +44,8 @@ function Profiles() {
     const totalPages = Math.ceil(filteredProfiles.length / itemsPerPage);
 
     useEffect(() => {
-        fetchProfiles(currentWorkspace.id);
-    }, [currentWorkspace]);
+        fetchProfiles(workspaceID);
+    }, [workspaceID]);
 
     useEffect(() => {
         if (location.pathname.includes(`/profiles/all`)) {
@@ -93,7 +93,7 @@ function Profiles() {
                         </span>
                     }
                     className="bg-gray-700 text-color px-2 py-1 hidden sm:block rounded-md cursor-pointer hover:bg-gray-600"
-                    onClick={() => navigatePage(`/${currentWorkspace.url}/profiles/all`)}
+                    onClick={() => navigatePage(`/${workspaceID}/profiles/all`)}
                     />
                 </div>
                 <div className="flex items-center gap-2">

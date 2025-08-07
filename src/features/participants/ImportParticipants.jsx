@@ -26,7 +26,7 @@ function ImportParticipants({ open, onClose, eventId }) {
 
     setIsLoading(true);
     try {
-      await importParticipantsFromExcel(currentWorkspace.id, file, eventId);
+      await importParticipantsFromExcel(workspaceID, file, eventId);
       toast.success("Participants imported successfully!");
       onClose();
     } catch (error) {

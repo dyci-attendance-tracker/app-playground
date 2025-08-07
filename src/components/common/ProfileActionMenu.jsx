@@ -10,7 +10,7 @@ import { SlidersHorizontal, Pencil, Trash2, X } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useProfiles } from '../../contexts/ProfilesContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import { toast } from 'sonner';
 import EditProfile from '../../features/profiles/EditProfile';
@@ -21,19 +21,19 @@ export default function ProfileActionMenu({ selectedProfile }) {
   const [openModal, setOpenModal] = useState(false);
 
   const { deleteProfile } = useProfiles();
-  const { currentWorkspace } = useWorkspace();
+  const {workspaceID} = useParams()
   const navigate = useNavigate();
 
   const onDelete = async () => {
     try {
-      await deleteProfile(currentWorkspace.id, selectedProfile.id);
+      await deleteProfile(workspaceID, selectedProfile.id);
       toast.success('Profile deleted successfully!');
     } catch (err) {
       console.error('Delete failed', err);
       toast.error('Failed to delete profile.');
     } finally {
       setOpenDeleteDialog(false);
-      navigate(`/${currentWorkspace.url}/profiles/all`);
+      navigate(`/${workspaceID}/profiles/all`);
     }
   };
 

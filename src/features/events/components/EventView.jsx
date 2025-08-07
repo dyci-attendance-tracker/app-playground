@@ -14,7 +14,7 @@ function EventView() {
 
   const [event, setEvent] = useState(null);
 
-  const {currentWorkspace} = useWorkspace();
+  const {workspaceID} = useParams()
 
 
   // Get event when events change or eventId changes
@@ -26,7 +26,7 @@ function EventView() {
   }, [events, eventID]);
 
   useEffect(() => {
-    fetchEvents(currentWorkspace.id);
+    fetchEvents(workspaceID);
   }, []);
 
   if (isLoading || !event) {

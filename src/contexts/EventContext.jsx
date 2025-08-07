@@ -11,8 +11,6 @@ import {
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
-import { useWorkspace } from './WorkspaceContext';
-import { useParams } from 'react-router';
 
 const EventContext = createContext();
 
@@ -41,7 +39,7 @@ export function EventProvider({ children }) {
 
   const fetchEventById = async (eventId, workspaceID) => {
     if (!eventId || !workspaceID) {
-      console.warn("Missing eventId or currentWorkspace.id", { eventId, workspaceID });
+      console.warn("Missing eventId or workspaceID", { eventId, workspaceID });
       return null;
     }
 
@@ -86,7 +84,7 @@ export function EventProvider({ children }) {
     try {
       const eventsRef = collection(db, 'workspaces', workspaceID, 'events');
       const docRef = await addDoc(eventsRef, newEvent);
-      await fetchEvents();
+      await fetchEvents(workspaceID);
       return docRef.id;
     } catch (err) {
       console.error('Error creating event:', err);
@@ -101,7 +99,7 @@ export function EventProvider({ children }) {
     try {
       const eventRef = doc(db, 'workspaces', workspaceID, 'events', id);
       await updateDoc(eventRef, updates);
-      await fetchEvents();
+      await fetchEvents(workspaceID);
     } catch (err) {
       console.error('Error updating event:', err);
       throw err;
@@ -113,7 +111,7 @@ export function EventProvider({ children }) {
     try {
       const eventRef = doc(db, 'workspaces', workspaceID, 'events', id);
       await deleteDoc(eventRef);
-      await fetchEvents();
+      await fetchEvents(workspaceID);
     } catch (err) {
       console.error('Error deleting event:', err);
       throw err;
@@ -131,17 +129,12 @@ export function EventProvider({ children }) {
     };
 
     try {
-        await createEvent(duplicatedEvent);
+        await createEvent(workspaceID,duplicatedEvent);
     } catch (err) {
         console.error('Error duplicating event:', err);
         throw err;
     }
   };
-
-  useEffect(() => {
-    fetchEvents();
-    console.log('Events fetched:', events);
-  }, [currentUser]);
 
   return (
     <EventContext.Provider

@@ -5,9 +5,11 @@ import { useEvents } from '../../contexts/EventContext';
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'sonner';
+import { useParams } from 'react-router';
 
 function EditEvent({ open, onClose, event }) {
-  const { updateEvent } = useEvents();
+  const {workspaceID} = useParams();
+  const { updateEvent, fetchEvents } = useEvents();
   const TITLE_MAX = 80;
   const SUMMARY_MAX = 255;
   const DESCRIPTION_MAX = 1000;
@@ -115,8 +117,9 @@ function EditEvent({ open, onClose, event }) {
           date: eventDate
         };
 
-        await updateEvent(event.id, eventData);
+        await updateEvent(workspaceID, event.id, eventData);
         toast.success("Event updated successfully!");
+        fetchEvents(workspaceID);
         onClose();
       } catch (err) {
         console.error('Error updating event:', err);

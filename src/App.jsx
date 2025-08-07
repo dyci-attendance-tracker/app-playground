@@ -55,15 +55,15 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path: "attendance-tracker/",
+        path: "/",
         element: <ProtectedRoute><Container /></ProtectedRoute>,
       },
       {
-        path: "attendance-tracker/",
+        path: "/",
         element: <ProtectedRoute><Container /></ProtectedRoute>,
         children: [
           {
-            path: ":workspaceURL",
+            path: ":workspaceID",
             element: <ProtectedRoute><Workspace /></ProtectedRoute>,
             children: [
               {
@@ -75,7 +75,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "attendance-tracker/:workspaceURL/",
+        path: ":workspaceID/",
         element: <ProtectedRoute><Container /></ProtectedRoute>,
         children: [
           {
@@ -109,7 +109,7 @@ const router = createBrowserRouter([
         ]
       },
       {
-        path: "attendance-tracker/workspace/create",
+        path: "workspace/create",
         element: <ProtectedRoute><CreateWorkspace /></ProtectedRoute>,
       },
       {
