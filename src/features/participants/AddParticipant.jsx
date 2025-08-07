@@ -16,7 +16,7 @@ const YEARS = (import.meta.env.VITE_YEARS || '').split(',').map(s => s.trim());
 const SECTIONS = (import.meta.env.VITE_SECTIONS || '').split(',').map(s => s.trim());
 
 function AddParticipant({ open, onClose, eventId  }) {
-    const { addParticipant } = useParticipants();
+    const { addParticipant, fetchParticipants } = useParticipants();
     const { createProfile } = useProfiles();
     const {workspaceID} = useParams()
 
@@ -228,6 +228,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                 status: 'registered'
             });
             toast.success('Participant added successfully!');
+            fetchParticipants(workspaceID);
             onClose();
         }
     } catch (err) {

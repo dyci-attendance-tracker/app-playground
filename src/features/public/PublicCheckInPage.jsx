@@ -4,6 +4,7 @@
     import { useParticipants } from '../../contexts/ParticipantsContext';
     import { toast } from 'sonner';
     import { Typography } from '@material-tailwind/react';
+    import { clearOfflineCheckIns, getOfflineCheckIns, saveOfflineCheckIn } from '../../utils/offlineCheckins';
 
     function PublicCheckInPage() {
     const { workspaceID, eventID } = useParams();
@@ -21,6 +22,8 @@
         const participants = await getParticipantsByEvent(workspaceID, eventID)
         setEventParticipants(participants);
     }
+
+    const savedCheckIns = getOfflineCheckIns();
 
     useEffect(() => {
     const goOnline = () => setIsOnline(true);
@@ -77,37 +80,35 @@
     };
     }, [isCheckingIn]);
 
-    const saveCheckInOffline = (data) => {
-        const offlineCheckIns = JSON.parse(localStorage.getItem('offlineCheckIns') || '[]');
-        offlineCheckIns.push(data);
-        localStorage.setItem('offlineCheckIns', JSON.stringify(offlineCheckIns));
-    };
-
-
     useEffect(() => {
-    if (isOnline) {
-        const syncOfflineCheckIns = async () => {
-        const offlineCheckIns = JSON.parse(localStorage.getItem('offlineCheckIns') || '[]');
-        if (offlineCheckIns.length === 0) return;
+        const handleReconnect = async () => {
+            const savedCheckIns = getOfflineCheckIns();
+            if (savedCheckIns.length === 0) return;
 
-        for (const checkIn of offlineCheckIns) {
+            for (const checkIn of savedCheckIns) {
             try {
-            await updateParticipantStatusByScan(workspaceID, eventID, checkIn.participantId, 'attended');
-            toast.success(`Synced check-in for ${checkIn.IDNumber}`);
+                await updateParticipantStatusByScan(
+                checkIn.workspaceID,
+                checkIn.eventID,
+                checkIn.participantID,
+                'attended'
+                );
             } catch (err) {
-            console.error("Sync error:", err);
-            toast.error("Failed to sync some check-ins");
+                console.error("Sync failed:", err);
             }
-        }
+            }
 
-        // Clear local storage if all succeeded
-        localStorage.removeItem('offlineCheckIns');
+            clearOfflineCheckIns();
+            toast.success(`${savedCheckIns.length} offline check-in(s) synced`);
+            getParticipants();
         };
 
-        syncOfflineCheckIns();
-    }
-    }, [isOnline]);
+        window.addEventListener("online", handleReconnect);
+        return () => window.removeEventListener("online", handleReconnect);
+    }, []);
 
+
+    
 
     const handleCheckIn = async () => {
         const participant = eventParticipants.find(p => p.IDNumber === scannedID);
@@ -121,12 +122,20 @@
             return;
         }
 
+        const checkInData = {
+            participantID: participant.id,
+            IDNumber: scannedID,
+            timestamp: new Date().toISOString(),
+            workspaceID,
+            eventID,
+        };
+
         if (isOnline) {
             try {
             setIsCheckingIn(true);
             await updateParticipantStatusByScan(workspaceID, eventID, participant.id, 'attended');
+            toast.success("Check-in successful");
             getParticipants();
-            toast.success("Checked in successfully");
             } catch (err) {
             console.error(err);
             toast.error("Check-in failed");
@@ -134,15 +143,35 @@
             setIsCheckingIn(false);
             }
         } else {
-            // Save to localStorage
-            saveCheckInOffline({
-            participantId: participant.id,
-            IDNumber: participant.IDNumber,
-            timestamp: Date.now()
-            });
-            toast.info("No internet: saved check-in locally");
+            saveOfflineCheckIn(checkInData);
+            toast.warning("Offline – saved check-in locally");
         }
+
+        setScannedID("");
     };
+
+
+    const handleManualSync = async () => {
+        const saved = getOfflineCheckIns();
+        for (const checkIn of saved) {
+            try {
+            await updateParticipantStatusByScan(
+                checkIn.workspaceID,
+                checkIn.eventID,
+                checkIn.participantID,
+                'attended'
+            );
+            } catch (err) {
+            toast.error("Manual sync failed");
+            return;
+            }
+        }
+
+        clearOfflineCheckIns();
+        toast.success("Manual sync complete");
+        getParticipants();
+    };
+
 
 
     return (
@@ -185,18 +214,22 @@
                 {isCheckingIn ? "Checking In..." : "Check In"}
             </button>
 
-            {!isOnline && (
-            <button
-                onClick={() => toast.info("Waiting for connection to sync")}
-                className='bg-green-500 text-white w-full max-w-xs flex items-center justify-center py-2.5 px-4 rounded-md font-medium hover:bg-opacity-90 transition-colors mt-2 disabled:opacity-60'
-            >
-                Offline Mode: Data will sync when back online
-            </button>
-            )}
+            {/* {savedCheckIns && (
+                <button
+                    onClick={handleManualSync}
+                    className='bg-yellow-500 text-white w-full max-w-xs flex items-center justify-center py-2.5 px-4 rounded-md font-medium hover:bg-opacity-90 transition-colors mt-2'
+                >
+                    Sync Offline Data
+                </button>
+            )} */}
 
 
             <p className='text-gray-400 text-xs max-w-md text-center mt-4'>
                 Note: Once a participant has checked in, their status will be marked as attended. Duplicate scans will not count.
+            </p>
+
+            <p className='text-color-secondary text-xs max-w-md text-center mt-4'>
+                Developed by: Franc Alvenn Dela Cruz
             </p>
             </div>
         </div>

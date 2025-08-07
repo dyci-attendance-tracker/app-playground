@@ -151,8 +151,8 @@
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
                 // Refresh latest profiles and participants
-                await fetchProfiles();
-                await fetchParticipants(eventId);
+                await fetchProfiles(workspaceID);
+                await fetchParticipants(workspaceID, eventId);
 
                 const existingProfileIDs = new Set(profiles.map((p) => p.IDNumber?.trim()));
                 const existingParticipantIDs = new Set(participants.map((p) => p.IDNumber?.trim()));
@@ -224,8 +224,8 @@
                     await setDoc(participantDocRef, participantData);
                     });
 
-                await Promise.all(batchPromises);
-                await fetchParticipants(eventId);
+                await Promise.all(workspaceID, batchPromises);
+                await fetchParticipants(workspaceID, eventId);
                 };
 
                 reader.readAsArrayBuffer(file);

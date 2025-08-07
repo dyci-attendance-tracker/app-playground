@@ -259,7 +259,7 @@ function Sidebar() {
             }`}
             onClick={(e) => e.stopPropagation()}
             >
-             <div className="relative h-full pl-1 pr-4 flex flex-col">
+                <div className="relative h-full pl-1 pr-4 flex flex-col">
                     {/* Sidebar Content */}
                     <div className="flex items-center justify-between h-10 mb-2">
                         <Menu placement="bottom-start" className="w-full">
@@ -278,14 +278,56 @@ function Sidebar() {
                                     <ChevronDown size={16} className="text-color-secondary" />
                                 </Button>
                             </MenuHandler>
-                            <MenuList className="overlay text-color-secondary backdrop-blur-md w-full p-1 max-w-[230px] border-gray-700 z-50">
+                            <MenuList className="overlay text-color-secondary backdrop-blur-md w-full p-1 max-w-[230px] border-gray-700">
                                 <MenuItem className="text-color text-sm py-1.5 px-2 flex items-center justify-between hover:bg-gray-700">
                                     Settings
                                     <span className="text-xs text-color-secondary ml-2">G then S</span>
                                 </MenuItem>
+
+                                {/* Possible addition later on */}
+                                {/* <MenuItem className="text-color text-sm py-1.5 px-2 flex items-center justify-between hover:bg-gray-700">Invite and manage members</MenuItem> */}
                                 <div className="h-px my-1 bg-gray-700" />
                                 <MenuItem className="text-color text-sm py-1.5 px-2 flex items-center justify-between hover:bg-gray-700">Download desktop App</MenuItem>
                                 <div className="h-px my-1 bg-gray-700" />
+                                <Menu
+                                    placement="bottom-end"
+                                    open={openMenu}
+                                    handler={setOpenMenu}
+                                    allowHover
+                                    >
+                                    <MenuHandler className="text-color text-sm py-1.5 px-2 flex items-center justify-between hover:bg-gray-700">
+                                        <MenuItem>
+                                        Switch workspace
+                                        <span className="flex items-center gap-2">
+                                            <span className="text-xs text-color-secondary ml-2">O then W</span>
+                                            <ChevronUpIcon
+                                                strokeWidth={2.5}
+                                                className={`h-3.5 w-3.5 text-color-secondary transition-transform ${
+                                                openMenu ? "rotate-180 text-color" : ""
+                                                }`}
+                                            />
+                                        </span>
+                                        </MenuItem>
+                                    </MenuHandler>
+                                    <MenuList className="overlay text-color-secondary backdrop-blur-md w-full p-2 max-w-[230px] border-gray-700 z-50 h-50 overflow-y-auto scrollbar-hide">
+                                        <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                                            {currentUser?.email}
+                                        </div>
+                                        {/* Should use all the workspaces that the user is a member of */}
+                                        {getAllWorkspacesMemberOf().map((workspace) => (
+                                        <MenuItem className="text-color py-1.5 px-2 text-sm flex gap-2 hover:bg-gray-700" key={workspace.id} onClick={async () => { await changeWorkspace(workspace.id)}}>
+                                            <div className="py-0.5 px-1 flex items-center  accent-bg text-xs font-bold text-color rounded-sm">
+                                                {getInitials(workspace?.name)}
+                                            </div>
+                                            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                                                {isLoading ? 'Loading...' : workspace?.name ?? 'No Workspace'}
+                                            </div>
+                                        </MenuItem>
+                                        ))}
+                                        <div className="h-px my-1 bg-gray-700" />
+                                        <MenuItem className="text-color text-sm py-1.5 px-2 flex items-center justify-between hover:bg-gray-700" onClick={async () => { await navigatePage('/workspace/create') }}>Create or join a workspace</MenuItem>
+                                    </MenuList>
+                                </Menu>
                                 <MenuItem className="text-color text-sm py-1.5 px-2 flex items-center justify-between hover:bg-gray-700" onClick={logout}>
                                     Logout
                                     <span className="text-xs text-color-secondary ml-2">Alt then L</span>
@@ -302,17 +344,11 @@ function Sidebar() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col justify-between gap-0 h-10 mb-10">
+                    <div className="flex flex-col justify-between gap-0 h-0 mb-13">
                         <div className="flex items-center gap-1">
                             <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700">
                                 <Inbox size={16} className="text-color-secondary" />
                                 <p className="text-color text-xs font-semibold">Inbox</p>
-                            </Button>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700">
-                                <Focus size={16} className="text-color-secondary" />
-                                <p className="text-color text-xs font-semibold">My issues</p>
                             </Button>
                         </div>
                     </div>
@@ -320,27 +356,28 @@ function Sidebar() {
                     <div className="flex flex-col gap-0 mb-4">
                         <Accordion open={openAccordions.includes(1)} icon={
                             <ChevronDown size={16} className={`text-color-secondary ${openAccordions.includes(1) ? 'rotate-180' : ''}`} id={1} open={openAccordions.includes(1)} />}>
-                            <AccordionHeader onClick={() => handleOpen(1)} className="text-xs border-none text-color-secondary mb-1 hover:bg-gray-700 rounded-md p-1">Workspace</AccordionHeader>
+                            <AccordionHeader onClick={() => handleOpen(1)} className="text-xs border-none text-color-secondary hover:bg-gray-700 rounded-md p-1">Workspace</AccordionHeader>
                             <AccordionBody className={`flex flex-col gap-1 ${openAccordions.includes(1) ? 'block' : 'hidden'}`}>
-                                <div className="flex items-center gap-1">
-                                    <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700">
-                                        <Copy size={16} className="text-color-secondary" />
-                                        <p className="text-color text-xs font-semibold">Issues</p>
-                                    </Button>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700">
-                                        <Box size={16} className="text-color-secondary" />
+                                <div className="flex items-center gap-1 mb-1">
+                                    <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700"  onClick={() => navigatePage(`/${workspaceID}/events/all`)}>
+                                        <CalendarDays size={16} className="text-color-secondary" />
                                         <p className="text-color text-xs font-semibold">Events</p>
                                     </Button>
                                 </div>
-                                <div className="flex items-center gap-1">
-                                    <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700">
-                                        <Layers2 size={16} className="text-color-secondary" />
-                                        <p className="text-color text-xs font-semibold">Views</p>
+                                <div className="flex items-center gap-1 mb-1">
+                                    <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700" onClick={() => navigatePage(`/${workspaceID}/profiles/all`) }>
+                                        <UserRoundPen size={16} className="text-color-secondary" />
+                                        <p className="text-color text-xs font-semibold">Profiles</p>
                                     </Button>
                                 </div>
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-1 mb-1">
+                                    <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700">
+                                        <Layers2 size={16} className="text-color-secondary" />
+                                        <p className="text-color text-xs font-semibold">Reports</p>
+                                    </Button>
+                                </div>
+                                {/* This is more info */}
+                                {/* <div className="flex items-center gap-1">
                                     <Menu placement="bottom-start" className="w-full">
                                         <MenuHandler>
                                             <Button
@@ -353,7 +390,7 @@ function Sidebar() {
                                             </Button>
                                         </MenuHandler>
 
-                                        <MenuList className="flex flex-col overlay text-color-secondary backdrop-blur-md w-full p-1 max-w-[180px] border-gray-700 z-50">
+                                        <MenuList className="flex flex-col overlay text-color-secondary backdrop-blur-md w-full p-1 max-w-[180px] border-gray-700">
                                             <MenuItem className="text-color text-sm p-2 flex items-center gap-2 hover:bg-gray-700">
                                                 <UsersRound size={16} className="text-color-secondary" />
                                                 <p className="text-xs font-semibold">Members</p>
@@ -365,7 +402,7 @@ function Sidebar() {
                                             </MenuItem>
                                         </MenuList>
                                     </Menu>
-                                </div>
+                                </div> */}
                             </AccordionBody>
                         </Accordion>
                     </div>

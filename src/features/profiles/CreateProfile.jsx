@@ -437,7 +437,7 @@ function CreateProfile({ open, onClose }) {
                     </button>
                     <button
                       className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={(e) => { handleCreate}}
+                      onClick={(e) => { handleCreate()}}
                       disabled={
                         isLoading
                       }

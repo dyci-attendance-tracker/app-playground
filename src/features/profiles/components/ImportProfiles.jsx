@@ -8,7 +8,7 @@ import { useWorkspace } from "../../../contexts/WorkspaceContext";
 import { useParams } from "react-router";
 
 function ImportProfiles({ open, onClose }) {
-  const { importProfilesFromExcel } = useProfiles();
+  const { importProfilesFromExcel, fetchProfiles } = useProfiles();
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const {workspaceID} = useParams()
@@ -29,6 +29,7 @@ function ImportProfiles({ open, onClose }) {
     try {
       await importProfilesFromExcel(workspaceID,file);
       toast.success("Profiles imported successfully!");
+      fetchProfiles(workspaceID);
       onClose();
     } catch (error) {
       toast.error("Failed to import profiles.");
@@ -138,7 +139,7 @@ function ImportProfiles({ open, onClose }) {
                 Cancel
               </button>
               <button
-                onClick={(e) => { handleImport}}
+                onClick={(e) => { handleImport()}}
                 disabled={isLoading || !file}
                 className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >

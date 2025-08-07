@@ -4,13 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import excelImportExample from '../../assets/images/excel-import-example.png';
 import { useParticipants } from "../../contexts/ParticipantsContext";
-import { useWorkspace } from "../../contexts/WorkspaceContext";
+import { useParams } from "react-router";
 
 function ImportParticipants({ open, onClose, eventId }) {
-  const {currentWorkspace } = useWorkspace();
-  const { importParticipantsFromExcel } = useParticipants();
+  const { importParticipantsFromExcel, fetchParticipants } = useParticipants();
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const {workspaceID} = useParams();
 
   useEffect(() => {
     const handleEsc = (e) => e.key === "Escape" && onClose();
@@ -28,6 +28,7 @@ function ImportParticipants({ open, onClose, eventId }) {
     try {
       await importParticipantsFromExcel(workspaceID, file, eventId);
       toast.success("Participants imported successfully!");
+      fetchParticipants(workspaceID);
       onClose();
     } catch (error) {
       toast.error("Failed to import participants.");
@@ -136,7 +137,7 @@ function ImportParticipants({ open, onClose, eventId }) {
                 Cancel
               </button>
               <button
-                onClick={(e) => { handleImport}}
+                onClick={(e) => { handleImport()}}
                 disabled={isLoading || !file}
                 className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >
