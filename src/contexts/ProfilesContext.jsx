@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import {
   collection,
   doc,
@@ -6,11 +6,8 @@ import {
   updateDoc,
   deleteDoc,
   getDocs,
-  setDoc,
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
-import { useAuth } from './AuthContext';
-import { useWorkspace } from './WorkspaceContext';
 import * as XLSX from 'xlsx';
 
 
@@ -19,7 +16,6 @@ const ProfilesContext = createContext();
 export const useProfiles = () => useContext(ProfilesContext);
 
 export function ProfilesProvider({ children }) {
-  const { currentUser } = useAuth();
 
   const [profiles, setProfiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -121,7 +117,7 @@ export function ProfilesProvider({ children }) {
             const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: '' });
 
             // Refresh current profiles to ensure up-to-date checks
-            await fetchProfiles();
+            await fetchProfiles(workspaceID);
 
             const existingIDs = new Set(profiles.map((p) => p.IDNumber?.trim()));
 
@@ -133,9 +129,9 @@ export function ProfilesProvider({ children }) {
             );
 
             const batchPromises = jsonData
-                .filter((row) => row["Student Number"] && row["First Name"] && row["Last Name"])
+                .filter((row) => row["Student ID"] && row["First Name"] && row["Last Name"])
                 .map(async (row) => {
-                const IDNumber = (row["Student Number"] || '').trim();
+                const IDNumber = (row["Student ID"] || '').trim();
 
                 // Skip if already exists
                 if (existingIDs.has(IDNumber)) {
@@ -160,8 +156,8 @@ export function ProfilesProvider({ children }) {
                 return addDoc(profilesRef, profileData);
                 });
 
-            await Promise.all(batchPromises);
-            await fetchProfiles();
+            await Promise.all(workspaceID, batchPromises);
+            await fetchProfiles(workspaceID);
             };
 
             reader.readAsArrayBuffer(file);
