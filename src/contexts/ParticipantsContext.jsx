@@ -23,21 +23,20 @@
 
     export function ParticipantsProvider({ children }) {
     const { currentUser } = useAuth();
-    const { currentWorkspace } = useWorkspace();
 
     const [participants, setParticipants] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
     const { profiles, fetchProfiles } = useProfiles();
 
-        const fetchParticipants = async (eventId) => {
-            if (!eventId || !currentWorkspace?.id) return;
+        const fetchParticipants = async (workspaceID,eventId) => {
+            if (!eventId || !workspaceID) return;
             setIsLoading(true);
             try {
             const participantsRef = collection(
                 db,
                 'workspaces',
-                currentWorkspace.id,
+                workspaceID,
                 'events',
                 eventId,
                 'participants'
@@ -52,14 +51,14 @@
             }
         };
 
-        const addParticipant = async (eventId, participantId, participantData) => {
-            if (!eventId || !participantId || !participantData || !currentWorkspace?.id) return;
+        const addParticipant = async (workspaceID, eventId, participantId, participantData) => {
+            if (!eventId || !participantId || !participantData || !workspaceID) return;
 
             try {
                 const participantRef = doc(
                 db,
                 'workspaces',
-                currentWorkspace.id,
+                workspaceID,
                 'events',
                 eventId,
                 'participants',
@@ -76,14 +75,14 @@
         };
 
 
-        const updateParticipant = async (eventId, participantId, updates) => {
-            if (!eventId || !participantId || !updates || !currentWorkspace?.id) return;
+        const updateParticipant = async (workspaceID, eventId, participantId, updates) => {
+            if (!eventId || !participantId || !updates || !workspaceID) return;
 
             try {
             const participantRef = doc(
                 db,
                 'workspaces',
-                currentWorkspace.id,
+                workspaceID,
                 'events',
                 eventId,
                 'participants',
@@ -97,14 +96,14 @@
             }
         };
 
-        const removeParticipant = async (eventId, participantId) => {
-            if (!eventId || !participantId || !currentWorkspace?.id) return;
+        const removeParticipant = async (workspaceID, eventId, participantId) => {
+            if (!eventId || !participantId || !workspaceID) return;
 
             try {
             const participantRef = doc(
                 db,
                 'workspaces',
-                currentWorkspace.id,
+                workspaceID,
                 'events',
                 eventId,
                 'participants',
@@ -118,11 +117,11 @@
             }
         };
 
-        const findProfileByIDNumber = async (idNumber) => {
-            if (!idNumber || !currentWorkspace?.id) return null;
+        const findProfileByIDNumber = async (workspaceID, idNumber) => {
+            if (!idNumber || !workspaceID) return null;
 
             try {
-                const profilesRef = collection(db, 'workspaces', currentWorkspace.id, 'profiles');
+                const profilesRef = collection(db, 'workspaces', workspaceID, 'profiles');
                 const q = query(profilesRef, where('IDNumber', '==', idNumber.trim()));
                 const snapshot = await getDocs(q);
 
@@ -138,8 +137,8 @@
             }
         };
 
-        const importParticipantsFromExcel = async (file, eventId) => {
-            if (!file || !eventId || !currentWorkspace?.id) return;
+        const importParticipantsFromExcel = async (workspaceID ,file, eventId) => {
+            if (!file || !eventId || !workspaceID) return;
 
             try {
                 const reader = new FileReader();
@@ -161,14 +160,14 @@
                 const profilesRef = collection(
                     db,
                     "workspaces",
-                    currentWorkspace.id,
+                    workspaceID,
                     "profiles"
                 );
 
                 const participantsRef = collection(
                     db,
                     "workspaces",
-                    currentWorkspace.id,
+                    workspaceID,
                     "events",
                     eventId,
                     "participants"
@@ -236,14 +235,37 @@
             }
         };
 
-        const updateParticipantStatus = async (workspaceId, eventId, participantId, status) => {
-            if (!eventId || !participantId || !status || !currentWorkspace?.id) return;
+        const updateParticipantStatus = async (workspaceID, eventId, participantId, status) => {
+            if (!eventId || !participantId || !status || !workspaceID) return;
 
             try {
                 const participantRef = doc(
                     db,
                     'workspaces',
-                    currentWorkspace?.id || workspaceId,
+                    workspaceID,
+                    'events',
+                    eventId,
+                    'participants',
+                    participantId
+                );
+
+                await updateDoc(participantRef, { status });
+                await fetchParticipants(eventId);
+            } catch (err) {
+                console.error('Error updating participant status:', err);
+                throw err;
+            }
+        };
+
+
+        const updateParticipantStatusByScan = async (workspaceID, eventId, participantId, status) => {
+            if (!eventId || !participantId || !status || !workspaceID) return;
+
+            try {
+                const participantRef = doc(
+                    db,
+                    'workspaces',
+                    workspaceID,
                     'events',
                     eventId,
                     'participants',
@@ -258,14 +280,14 @@
             }
         };
         
-        const clearList = async (eventId) => {
+        const clearList = async (workspaceID, eventId) => {
             if (!eventId) return;
         
             try {
                 const participantsCollectionRef = collection(
                 db,
                 "workspaces",
-                currentWorkspace.id,
+                workspaceID,
                 "events",
                 eventId,
                 "participants"
@@ -286,14 +308,14 @@
             }
         };
         
-        const resetList = async (eventId) => {
+        const resetList = async (workspaceID, eventId) => {
             if (!eventId) return;
         
             try {
                 const participantsCollectionRef = collection(
                 db,
                 "workspaces",
-                currentWorkspace.id,
+                workspaceID,
                 "events",
                 eventId,
                 "participants"
@@ -351,6 +373,7 @@
                 findProfileByIDNumber,
                 importParticipantsFromExcel,
                 updateParticipantStatus,
+                updateParticipantStatusByScan,
                 clearList,
                 resetList,
                 getParticipantsByEvent

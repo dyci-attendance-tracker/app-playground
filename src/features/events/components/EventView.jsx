@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { Button, Typography } from '@material-tailwind/react';
 import { BoxIcon } from 'lucide-react';
 import Participants from '../../participants/Participants';
+import { useWorkspace } from '../../../contexts/WorkspaceContext';
 
 function EventView() {
   const { currentPage, itemsPerPage, filteredParticipants } = useOutletContext();
@@ -12,6 +13,8 @@ function EventView() {
   const { events, fetchEvents, isLoading } = useEvents();
 
   const [event, setEvent] = useState(null);
+
+  const {currentWorkspace} = useWorkspace();
 
 
   // Get event when events change or eventId changes
@@ -23,7 +26,7 @@ function EventView() {
   }, [events, eventID]);
 
   useEffect(() => {
-    fetchEvents();
+    fetchEvents(currentWorkspace.id);
   }, []);
 
   if (isLoading || !event) {

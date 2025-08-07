@@ -93,7 +93,7 @@ export default function EventActionsMenu({ selectedEvent }) {
     const onClearList = async () => {
         try {
             setLoading(true)
-            await clearList(selectedEvent.id);
+            await clearList(currentWorkspace.id,selectedEvent.id);
             toast.success("List cleared successfully!")
         } catch (err) {
             console.error("Clear List failed", err);
@@ -109,7 +109,7 @@ export default function EventActionsMenu({ selectedEvent }) {
     const onResetList = async () => {
         try {
             setLoading(true);
-            await resetList(selectedEvent.id);
+            await resetList(currentWorkspace.id,selectedEvent.id);
             toast.success("List reset successfully!")
         } catch (err) {
             console.error("Clear Reset failed", err);

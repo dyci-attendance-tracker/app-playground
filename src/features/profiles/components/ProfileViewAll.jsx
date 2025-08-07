@@ -13,7 +13,7 @@ function ProfileViewAll() {
   const { currentWorkspace } = useWorkspace();
 
   useEffect(() => {
-    fetchProfiles(); // assumes workspace-aware fetching inside
+    fetchProfiles(currentWorkspace.id); // assumes workspace-aware fetching inside
   }, [currentWorkspace]);
 
   const paginatedProfiles = filteredProfiles.slice(

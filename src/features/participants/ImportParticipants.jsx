@@ -4,8 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import excelImportExample from '../../assets/images/excel-import-example.png';
 import { useParticipants } from "../../contexts/ParticipantsContext";
+import { useWorkspace } from "../../contexts/WorkspaceContext";
 
 function ImportParticipants({ open, onClose, eventId }) {
+  const {currentWorkspace } = useWorkspace();
   const { importParticipantsFromExcel } = useParticipants();
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +26,7 @@ function ImportParticipants({ open, onClose, eventId }) {
 
     setIsLoading(true);
     try {
-      await importParticipantsFromExcel(file, eventId);
+      await importParticipantsFromExcel(currentWorkspace.id, file, eventId);
       toast.success("Participants imported successfully!");
       onClose();
     } catch (error) {

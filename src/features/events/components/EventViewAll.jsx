@@ -21,7 +21,7 @@ function EventViewAll() {
   const { currentWorkspace } = useWorkspace();
 
   useEffect(() => {
-    fetchEvents();
+    fetchEvents(currentWorkspace.id);
   }, [currentWorkspace]);
 
   const paginatedEvents = filteredEvents.slice(

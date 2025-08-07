@@ -22,8 +22,10 @@ import { toast } from 'sonner';
 // Replace with your actual context
 import { useParticipants } from '../../contexts/ParticipantsContext';
 import { useParams } from 'react-router';
+import { useWorkspace } from '../../contexts/WorkspaceContext';
 
 export default function ParticipantActionMenu({ selectedParticipant }) {
+  const {currentWorkspace} = useWorkspace();
   const [openStatusMenu, setOpenStatusMenu] = useState(false);
   const [openRemoveDialog, setOpenRemoveDialog] = useState(false);
   const { updateParticipantStatus, removeParticipant } = useParticipants();
@@ -31,7 +33,7 @@ export default function ParticipantActionMenu({ selectedParticipant }) {
 
   const handleStatusChange = async (status) => {
     try {
-      await updateParticipantStatus(eventID,selectedParticipant.id, status);
+      await updateParticipantStatus(currentWorkspace.id,eventID,selectedParticipant.id, status);
       toast.success(`Status updated to ${status}`);
     } catch (err) {
       console.error(err);
@@ -41,7 +43,7 @@ export default function ParticipantActionMenu({ selectedParticipant }) {
 
   const handleRemove = async () => {
     try {
-      await removeParticipant(eventID, selectedParticipant.id);
+      await removeParticipant(currentWorkspace.id, eventID, selectedParticipant.id);
       toast.success('Participant removed successfully.');
     } catch (err) {
       console.error(err);
@@ -90,21 +92,21 @@ export default function ParticipantActionMenu({ selectedParticipant }) {
 
             <MenuList className="overlay text-color-secondary backdrop-blur-md p-2 max-w-[200px] border-gray-700">
               <MenuItem
-                onClick={(e) => {e.stopPropagation(); handleStatusChange('attended')}}
+                onClick={(e) => {e.stopPropagation();handleStatusChange('attended')}}
                 className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
               >
                 <CircleCheckIcon size={16} className="text-green-600" />
                 Attended
               </MenuItem>
               <MenuItem
-                onClick={(e) => {e.stopPropagation(); handleStatusChange('registered')}}
+                onClick={(e) => {e.stopPropagation();handleStatusChange('registered')}}
                 className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
               >
                 <CircleDashed size={16} className="text-color-secondary" />
                 Registered
               </MenuItem>
               <MenuItem
-                onClick={(e) => {e.stopPropagation(); handleStatusChange('no-show')}}
+                onClick={(e) => {e.stopPropagation();handleStatusChange('no-show')}}
                 className="text-color flex items-center gap-2 text-sm py-1.5 px-2 hover:bg-gray-700"
               >
                 <CircleXIcon size={16} className="text-red-400" />

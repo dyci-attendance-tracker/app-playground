@@ -4,11 +4,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { useProfiles } from "../../../contexts/ProfilesContext";
 import excelImportExample from '../../../assets/images/excel-import-example.png';
+import { useWorkspace } from "../../../contexts/WorkspaceContext";
 
 function ImportProfiles({ open, onClose }) {
   const { importProfilesFromExcel } = useProfiles();
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const {currentWorkspace} = useWorkspace();
 
   useEffect(() => {
     const handleEsc = (e) => e.key === "Escape" && onClose();
@@ -24,7 +26,7 @@ function ImportProfiles({ open, onClose }) {
 
     setIsLoading(true);
     try {
-      await importProfilesFromExcel(file);
+      await importProfilesFromExcel(currentWorkspace.id,file);
       toast.success("Profiles imported successfully!");
       onClose();
     } catch (error) {

@@ -7,7 +7,7 @@
 
     function PublicCheckInPage() {
     const { workspaceID, eventID } = useParams();
-    const { getParticipantsByEvent, updateParticipantStatus } = useParticipants();
+    const { getParticipantsByEvent, updateParticipantStatusByScan } = useParticipants();
 
     const scannerRef = useRef(null);
     const [scannedID, setScannedID] = useState('');
@@ -29,7 +29,7 @@
         "qr-reader",
         {
         fps: 10,
-        qrbox: 300,
+        qrbox: 500,
         supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA],
         formatsToSupport: [
             Html5QrcodeSupportedFormats.QR_CODE,
@@ -58,7 +58,7 @@
     );
 
     return () => {
-        scanner.clear().catch((err) => console.error("Cleanup error", err));
+        // scanner.clear().catch((err) => console.error("Cleanup error", err));
     };
     }, [isCheckingIn]);
 
@@ -78,7 +78,7 @@
 
         try {
         setIsCheckingIn(true);
-        await updateParticipantStatus(workspaceID, eventID, participant.id, 'attended');
+        await updateParticipantStatusByScan(workspaceID, eventID, participant.id, 'attended');
         getParticipants();
         toast.success("Checked in successfully");
         } catch (err) {
@@ -102,8 +102,8 @@
                 <p className='text-color-secondary text-sm font-semibold'>Make sure the QR code is visible inside the scanner box</p>
             </div>
 
-            <div className='secondary flex flex-col justify-center items-center w-fit min-w-[320px] rounded-lg max-h-[60vh] p-4'>
-                <div id="qr-reader" className="w-full max-w-md aspect-video rounded-md overflow-hidden bg-black" ref={scannerRef}></div>
+            <div className='secondary flex flex-col justify-center items-center w-fit min-w-[350px] lg:min-w-[500px] rounded-lg max-h-[60vh] p-4'>
+                <div id="qr-reader" className="w-fit max-w-lg min-w-[350px] aspect-video rounded-md overflow-hidden flex flex-col  items-center" ref={scannerRef}></div>
 
                 <input
                 type="text"

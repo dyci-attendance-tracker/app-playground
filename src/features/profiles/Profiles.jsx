@@ -44,7 +44,7 @@ function Profiles() {
     const totalPages = Math.ceil(filteredProfiles.length / itemsPerPage);
 
     useEffect(() => {
-        fetchProfiles();
+        fetchProfiles(currentWorkspace.id);
     }, [currentWorkspace]);
 
     useEffect(() => {

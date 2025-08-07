@@ -26,7 +26,7 @@ export default function ProfileActionMenu({ selectedProfile }) {
 
   const onDelete = async () => {
     try {
-      await deleteProfile(selectedProfile.id);
+      await deleteProfile(currentWorkspace.id, selectedProfile.id);
       toast.success('Profile deleted successfully!');
     } catch (err) {
       console.error('Delete failed', err);

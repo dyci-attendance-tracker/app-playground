@@ -3,16 +3,18 @@ import { useOutletContext, useParams } from 'react-router-dom';
 import { useProfiles } from '../../../contexts/ProfilesContext';
 import { BoxIcon } from 'lucide-react';
 import { Typography } from '@material-tailwind/react';
+import { useWorkspace } from '../../../contexts/WorkspaceContext';
 
 function ProfileView() {
   const { currentPage, itemsPerPage } = useOutletContext();
   const { profileID } = useParams();
   const { profiles, fetchProfiles, isLoading } = useProfiles();
+  const {currentWorkspace} = useWorkspace();
 
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
-    fetchProfiles();
+    fetchProfiles(currentWorkspace.id);
   }, []);
 
   useEffect(() => {

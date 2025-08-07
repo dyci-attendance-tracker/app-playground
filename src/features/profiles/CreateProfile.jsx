@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from "@material-tailwind/react";
 import { useProfiles } from '../../contexts/ProfilesContext';
 import { toast } from 'sonner';
+import { useWorkspace } from '../../contexts/WorkspaceContext';
 
 const DEPARTMENTS = JSON.parse(import.meta.env.VITE_DEPARTMENTS_JSON || '{}');
 const YEARS = (import.meta.env.VITE_YEARS || '').split(',').map(s => s.trim());
@@ -11,6 +12,7 @@ const SECTIONS = (import.meta.env.VITE_SECTIONS || '').split(',').map(s => s.tri
 
 function CreateProfile({ open, onClose }) {
     const { createProfile } = useProfiles();
+    const {currentWorkspace} = useWorkspace();
 
     const FULLNAME_MAX = 100;
 
@@ -151,7 +153,7 @@ function CreateProfile({ open, onClose }) {
 
     setIsLoading(true);
     try {
-      await createProfile({
+      await createProfile(currentWorkspace.id,{
         IDNumber,
         firstName,
         lastName,

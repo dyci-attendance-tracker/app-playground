@@ -20,19 +20,18 @@ export const useProfiles = () => useContext(ProfilesContext);
 
 export function ProfilesProvider({ children }) {
   const { currentUser } = useAuth();
-  const { currentWorkspace } = useWorkspace();
 
   const [profiles, setProfiles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchProfiles = async () => {
-    if (!currentWorkspace?.id) return;
+  const fetchProfiles = async (workspaceID) => {
+    if (!workspaceID) return;
     setIsLoading(true);
     try {
       const profilesRef = collection(
         db,
         'workspaces',
-        currentWorkspace.id,
+        workspaceID,
         'profiles'
       );
       const snapshot = await getDocs(profilesRef);
@@ -45,8 +44,8 @@ export function ProfilesProvider({ children }) {
     }
   };
 
-    const createProfile = async (profileData) => {
-        if (!profileData || !currentWorkspace?.id) return;
+    const createProfile = async (workspaceID, profileData) => {
+        if (!profileData || !workspaceID) return;
 
         // Check for duplicate
         const duplicate = profiles.find(
@@ -60,7 +59,7 @@ export function ProfilesProvider({ children }) {
             const profilesRef = collection(
             db,
             'workspaces',
-            currentWorkspace.id,
+            workspaceID,
             'profiles'
             );
             const docRef = await addDoc(profilesRef, profileData);
@@ -73,13 +72,13 @@ export function ProfilesProvider({ children }) {
     };
 
 
-  const updateProfile = async (profileId, updates) => {
-    if (!profileId || !updates || !currentWorkspace?.id) return;
+  const updateProfile = async (workspaceID, profileId, updates) => {
+    if (!profileId || !updates || !workspaceID) return;
     try {
       const profileRef = doc(
         db,
         'workspaces',
-        currentWorkspace.id,
+        workspaceID,
         'profiles',
         profileId
       );
@@ -91,13 +90,13 @@ export function ProfilesProvider({ children }) {
     }
   };
 
-  const deleteProfile = async (profileId) => {
-    if (!profileId || !currentWorkspace?.id) return;
+  const deleteProfile = async (workspaceID, profileId) => {
+    if (!profileId || !workspaceID) return;
     try {
       const profileRef = doc(
         db,
         'workspaces',
-        currentWorkspace.id,
+        workspaceID,
         'profiles',
         profileId
       );
@@ -109,8 +108,8 @@ export function ProfilesProvider({ children }) {
     }
   };
 
-    const importProfilesFromExcel = async (file) => {
-        if (!file || !currentWorkspace?.id) return;
+    const importProfilesFromExcel = async (workspaceID, file) => {
+        if (!file || !workspaceID) return;
         try {
             const reader = new FileReader();
 
@@ -129,7 +128,7 @@ export function ProfilesProvider({ children }) {
             const profilesRef = collection(
                 db,
                 'workspaces',
-                currentWorkspace.id,
+                workspaceID,
                 'profiles'
             );
 

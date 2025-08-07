@@ -59,7 +59,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                 return;
             }
 
-            const profile = await findProfileByIDNumber(debouncedID);
+            const profile = await findProfileByIDNumber(currentWorkspace.id ,debouncedID);
             if (profile) {
                 setMatchedProfile(profile);
             } else {
@@ -183,7 +183,7 @@ function AddParticipant({ open, onClose, eventId  }) {
     setIsLoading(true);
     try {
         if (matchedProfile) {
-            await addParticipant(eventId, matchedProfile.id, {
+            await addParticipant(currentWorkspace.id ,eventId, matchedProfile.id, {
                 IDNumber,
                 firstName,
                 lastName,
@@ -199,7 +199,7 @@ function AddParticipant({ open, onClose, eventId  }) {
             toast.success('Participant added successfully!');
             onClose();
         }else{
-            const newProfileID = await createProfile({
+            const newProfileID = await createProfile(currentWorkspace.id,{
                 IDNumber,
                 firstName,
                 lastName,
@@ -213,7 +213,7 @@ function AddParticipant({ open, onClose, eventId  }) {
             })
             toast.success('Profile created successfully!');
             
-            await addParticipant(eventId, newProfileID, {
+            await addParticipant(currentWorkspace.id, eventId, newProfileID, {
                 IDNumber,
                 firstName,
                 lastName,

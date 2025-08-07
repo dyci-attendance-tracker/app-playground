@@ -54,7 +54,7 @@ function AddParticipantPage() {
                 setMatchedProfile(null);
                 return;
             }
-            const profile = await findProfileByIDNumber(debouncedID);
+            const profile = await findProfileByIDNumber(workspaceID, debouncedID);
             setMatchedProfile(profile || null);
             console.log(profile)
         };
@@ -164,7 +164,7 @@ function AddParticipantPage() {
             let profileId = matchedProfile?.id;
 
             if (!matchedProfile) {
-                profileId = await createProfile({
+                profileId = await createProfile(workspaceID,{
                     IDNumber,
                     firstName,
                     lastName,
@@ -179,7 +179,7 @@ function AddParticipantPage() {
                 toast.success('Profile created successfully.');
             }
 
-            await addParticipant(eventID, profileId, {
+            await addParticipant(workspaceID, eventID, profileId, {
                 IDNumber,
                 firstName,
                 lastName,

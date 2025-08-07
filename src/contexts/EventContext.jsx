@@ -20,16 +20,15 @@ export const useEvents = () => useContext(EventContext);
 
 export function EventProvider({ children }) {
   const { currentUser } = useAuth();
-  const { currentWorkspace } = useWorkspace();
 
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchEvents = async () => {
-    if (!currentUser || !currentWorkspace?.id) return;
+  const fetchEvents = async (workspaceID) => {
+    if (!currentUser || !workspaceID) return;
     setIsLoading(true);
     try {
-      const eventsRef = collection(db, 'workspaces', currentWorkspace.id, 'events');
+      const eventsRef = collection(db, 'workspaces', workspaceID, 'events');
       const snapshot = await getDocs(eventsRef);
       const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setEvents(data);
@@ -70,8 +69,8 @@ export function EventProvider({ children }) {
   };
 
 
-  const createEvent = async (eventData) => {
-    if (!eventData || !currentUser || !currentWorkspace?.id) return;
+  const createEvent = async (workspaceID, eventData) => {
+    if (!eventData || !currentUser || !workspaceID) return;
 
     const newEvent = {
       ...eventData,
@@ -85,7 +84,7 @@ export function EventProvider({ children }) {
 
     setIsLoading(true);
     try {
-      const eventsRef = collection(db, 'workspaces', currentWorkspace.id, 'events');
+      const eventsRef = collection(db, 'workspaces', workspaceID, 'events');
       const docRef = await addDoc(eventsRef, newEvent);
       await fetchEvents();
       return docRef.id;
@@ -97,10 +96,10 @@ export function EventProvider({ children }) {
     }
   };
 
-  const updateEvent = async (id, updates) => {
-    if (!id || !updates || !currentWorkspace?.id) return;
+  const updateEvent = async (workspaceID, id, updates) => {
+    if (!id || !updates || !workspaceID) return;
     try {
-      const eventRef = doc(db, 'workspaces', currentWorkspace.id, 'events', id);
+      const eventRef = doc(db, 'workspaces', workspaceID, 'events', id);
       await updateDoc(eventRef, updates);
       await fetchEvents();
     } catch (err) {
@@ -109,10 +108,10 @@ export function EventProvider({ children }) {
     }
   };
 
-  const deleteEvent = async (id) => {
-    if (!id || !currentWorkspace?.id) return;
+  const deleteEvent = async (workspaceID, id) => {
+    if (!id || !workspaceID) return;
     try {
-      const eventRef = doc(db, 'workspaces', currentWorkspace.id, 'events', id);
+      const eventRef = doc(db, 'workspaces', workspaceID, 'events', id);
       await deleteDoc(eventRef);
       await fetchEvents();
     } catch (err) {
@@ -121,8 +120,8 @@ export function EventProvider({ children }) {
     }
   };
 
-  const duplicateEvent = async (event) => {
-    if (!event || !currentUser || !currentWorkspace?.id) return;
+  const duplicateEvent = async (workspaceID, event) => {
+    if (!event || !currentUser || !workspaceID) return;
 
     const duplicatedEvent = {
         name: `${event.name} (Copy)`,
@@ -142,7 +141,7 @@ export function EventProvider({ children }) {
   useEffect(() => {
     fetchEvents();
     console.log('Events fetched:', events);
-  }, [currentUser, currentWorkspace?.id]);
+  }, [currentUser]);
 
   return (
     <EventContext.Provider

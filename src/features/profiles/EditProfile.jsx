@@ -3,6 +3,7 @@ import { X, UserIcon, UserPlus2, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { useProfiles } from '../../contexts/ProfilesContext';
+import { useWorkspace } from '../../contexts/WorkspaceContext';
 
 const DEPARTMENTS = JSON.parse(import.meta.env.VITE_DEPARTMENTS_JSON || '{}');
 const YEARS = (import.meta.env.VITE_YEARS || '').split(',').map(s => s.trim());
@@ -10,6 +11,7 @@ const SECTIONS = (import.meta.env.VITE_SECTIONS || '').split(',').map(s => s.tri
 
 function EditProfile({ open, onClose, profile }) {
     const { updateProfile } = useProfiles();
+    const {currentWorkspace} = useWorkspace();
 
     const FULLNAME_MAX = 100;
 
@@ -178,7 +180,7 @@ function EditProfile({ open, onClose, profile }) {
         section
       };
 
-      await updateProfile(profile.id, updatedProfile);
+      await updateProfile(currentWorkspace.id,profile.id, updatedProfile);
       toast.success('Profile updated successfully!');
       onClose();
     } catch (err) {

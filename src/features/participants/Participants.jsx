@@ -25,7 +25,7 @@ function Participants({ currentPage, itemsPerPage, filteredParticipants }) {
 
   useEffect(() => {
     if (eventID && currentWorkspace?.id) {
-      fetchParticipants(eventID);
+      fetchParticipants(currentWorkspace?.id, eventID);
     }
   }, [eventID, currentWorkspace]);
 
