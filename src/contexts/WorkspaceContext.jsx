@@ -34,9 +34,10 @@ export function WorkspaceProvider({ children }) {
 
 
     const currentWorkspace = useMemo(() => 
-        workspaces.find(w => w.url === currentUser?.workspaceURL),
-        [workspaces, currentUser?.workspaceURL]
+        workspaces.find(w => w.id === currentUser?.workspaceID),
+        [workspaces, currentUser?.workspaceID]
     );
+
 
 
     const createWorkspace = async ({ name, url }) => {
@@ -55,12 +56,12 @@ export function WorkspaceProvider({ children }) {
             };
 
             // Add workspace document
-            await addDoc(collection(db, 'workspaces'), newWorkspace);
+            const workspace = await addDoc(collection(db, 'workspaces'), newWorkspace);
 
             // Update user's document
             const userDocRef = doc(db, 'users', currentUser.uid);
             await updateDoc(userDocRef, {
-            workspaceURL: fullURL,
+            workspaceID: workspace.id,
             });
 
             await fetchWorkspaces(); // Refresh workspaces

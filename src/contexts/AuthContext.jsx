@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     await setDoc(userDocRef, {
       name: name || "",
       email: email,
-      workspaceURL: "",
+      workspaceID: "",
       createdAt: new Date(),
       onboardingStep: 1,
     });
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
           name: user.displayName || "",
           email: user.email || "",
           photoURL: user.photoURL || "",
-          workspaceURL: "",
+          workspaceID: "",
           createdAt: new Date(),
           onboardingStep: 1,
         });
@@ -69,12 +69,12 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => signOut(auth);
 
-  // Update user workspaceURL
-  function updateUserWorkspaceURL(workspaceURL) {
-    currentUser.workspaceURL = workspaceURL;
+  // Update user workspaceID
+  function updateUserWorkspaceURL(workspaceID) {
+    currentUser.workspaceID = workspaceID;
     if (currentUser) {
       const userDocRef = doc(db, "users", currentUser.uid);
-      updateDoc(userDocRef, { workspaceURL });
+      updateDoc(userDocRef, { workspaceID });
     }
   }
   
@@ -97,7 +97,7 @@ export const AuthProvider = ({ children }) => {
             const userData = {
               email: user.email,
               name: "",
-              workspaceURL: "",
+              workspaceID: "",
               createdAt: new Date(),
             };
             await setDoc(userDocRef, userData);

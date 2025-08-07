@@ -13,61 +13,67 @@ function CreateWorkspace() {
   const navigate = useNavigate();
 
   const [workspaceName, setWorkspaceName] = useState('');
-  const [workspaceURL, setWorkspaceURL] = useState('');
+  const [workspaceID, setWorkspaceID] = useState('');
   const [error, setError] = useState('');
-  const debouncedURL = useDebounce(workspaceURL, 500);
+  const debouncedURL = useDebounce(workspaceID, 500);
 
   const [slugCreated, setSlugCreated] = useState(null);
 
   useEffect(() => {
     const slug = workspaceName.trim().toLowerCase().replace(/\s+/g, '-');
-    setWorkspaceURL(`${slug}`);
+    setWorkspaceID(slug);
   }, [workspaceName]);
 
   useEffect(() => {
     const checkURL = async () => {
-      if (!debouncedURL) return;
-      const fullURL = `attendance-tracker/${debouncedURL}`;
-      const q = query(collection(db, 'workspaces'), where('url', '==', fullURL));
-      const snapshot = await getDocs(q);
-      if (!debouncedURL.trim()) {
+      if (!debouncedURL.trim() && workspaceName.trim()) {
         setError('Workspace URL is required.');
-      } else if (!/^[a-z0-9-]+$/.test(debouncedURL)) {
-        setError('Only lowercase letters, numbers, and hyphens are allowed.');
-      } else if (!snapshot.empty) {
+        return;
+      }
+
+      if (workspaceName) {
+        if (!/^[a-z0-9-]+$/.test(debouncedURL)) {
+          setError('Only lowercase letters, numbers, and hyphens are allowed.');
+          return;
+        }
+      }
+
+
+      const q = query(collection(db, 'workspaces'), where('url', '==', debouncedURL));
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
         setError('This workspace URL is already taken.');
       } else {
         setError('');
       }
     };
+
     checkURL();
   }, [debouncedURL]);
 
   const handleCreateWorkspace = async () => {
-    if (!workspaceName || !workspaceURL || !currentUser || error) return;
+    if (!workspaceName || !workspaceID || !currentUser || error) return;
     try {
-      const slug = workspaceURL;
       const success = await createWorkspace({
         name: workspaceName,
-        url: slug,
+        url: workspaceID,
       });
 
       if (success) {
-        setSlugCreated(`attendance-tracker/${slug}`); // Track expected URL
+        setSlugCreated(workspaceID); // Only the slug
       }
+      navigate(`/${workspaceID}/events/all`)
     } catch (err) {
       console.error('Failed to create workspace:', err);
     }
   };
 
-  // ✅ Navigate ONLY once the currentUser's workspaceURL is updated
   useEffect(() => {
-  if (slugCreated && currentUser?.workspaceURL === slugCreated) {
-    navigate(`/${slugCreated}`);
-  }
-  }, [currentUser?.workspaceURL, slugCreated, navigate]);
-
-
+    if (slugCreated && currentUser?.workspaceID === slugCreated) {
+      navigate(`/${slugCreated}`);
+    }
+  }, [currentUser?.workspaceID, slugCreated, navigate]);
 
   return (
     <div className='flex flex-col h-[90vh] overflow-y-auto primary'>
@@ -75,10 +81,10 @@ function CreateWorkspace() {
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center px-4 sm:px-10 py-3 w-full h-auto mb-4 gap-4 sm:gap-0'>
         <div className='flex items-center gap-1'>
           <CaretLeft size={16} className='text-white cursor-pointer' />
-          {currentUser.workspaceURL ? (
-            <a href='/attendance-tracker' className='text-color-secondary text-xs font-semibold'>Back to Attendance Tracker</a>
+          {currentUser?.workspaceID ? (
+            <a href={`/${currentUser.workspaceID}`} className='text-color-secondary text-xs font-semibold'>Back to Workspace</a>
           ) : (
-            <a onClick={logout} className="text-color-secondary text-xs font-semibold cursor-pointer">Logout</a>
+            <span onClick={logout} className="text-color-secondary text-xs font-semibold cursor-pointer">Logout</span>
           )}
         </div>
         <div className='flex flex-col items-end sm:items-start gap-1 ml-auto'>
@@ -112,17 +118,17 @@ function CreateWorkspace() {
               </div>
 
               <div className='flex flex-col items-start gap-2 w-full mt-4'>
-                <label htmlFor="workspaceURL" className='text-color text-sm font-semibold'>Workspace URL</label>
+                <label htmlFor="workspaceID" className='text-color text-sm font-semibold'>Workspace URL</label>
                 <div className='flex items-center w-full'>
                   <span className='secondary whitespace-nowrap text-color-secondary border border-gray-700 border-r-0 h-10 pl-3 rounded-l-md text-xs font-semibold flex items-center'>
-                    attendance-tracker/
+                    /
                   </span>
                   <input
                     type="text"
-                    id='workspaceURL'
+                    id='workspaceID'
                     placeholder='your-workspace-name'
-                    value={workspaceURL}
-                    onChange={(e) => setWorkspaceURL(e.target.value.replace(/\s+/g, '-').toLowerCase())}
+                    value={workspaceID}
+                    onChange={(e) => setWorkspaceID(e.target.value.replace(/\s+/g, '-').toLowerCase())}
                     className='secondary border border-gray-700 border-l-0 w-full h-10 pr-3 rounded-r-md text-color-secondary text-xs font-semibold outline-none'
                   />
                 </div>

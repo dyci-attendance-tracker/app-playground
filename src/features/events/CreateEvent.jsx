@@ -6,11 +6,13 @@ import { Input } from "@material-tailwind/react";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from 'sonner';
+import { useParams } from 'react-router';
 
 
 function CreateEvent({ open, onClose }) {
+  const {workspaceID} = useParams();
 
-  const { createEvent } = useEvents();
+  const { createEvent, fetchEvents } = useEvents();
   const TITLE_MAX = 80;
   const SUMMARY_MAX = 255;
   const DESCRIPTION_MAX = 1000;
@@ -118,8 +120,9 @@ function CreateEvent({ open, onClose }) {
           date: eventDate
         };
 
-        await createEvent(eventData); // ✅ Use EventContext instead of direct Firestore
+        await createEvent(workspaceID,eventData); // ✅ Use EventContext instead of direct Firestore
         toast.success("Event created successfully!");
+        fetchEvents(workspaceID);
         onClose(); // Close modal
       } catch (err) {
         console.error('Error creating project:', err);
@@ -141,7 +144,7 @@ function CreateEvent({ open, onClose }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={(e) => {onClose()}}
         >
             <motion.div
               className="overlay border  px-4 sm:px-7 min-h-[85vh] max-h-[85vh] flex flex-col justify-between border-gray-700 rounded-lg w-full max-w-4xl text-color"
@@ -168,7 +171,7 @@ function CreateEvent({ open, onClose }) {
                 <div className="flex justify-between items-center py-4  border-gray-700">
                     <h2 className="text-sm font-semibold">Create Event</h2>
                     <motion.button
-                        onClick={onClose}
+                        onClick={(e) => { onClose()}}
                         className="text-gray-400 hover:text-white"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -290,7 +293,7 @@ function CreateEvent({ open, onClose }) {
                 {/* Footer */}
                 <div className="py-4 flex gap-2 border-t border-gray-700 justify-end">
                     <button
-                        onClick={onClose}
+                        onClick={(e) => { onClose()}}
                         className="px-4 py-1.5 h-fit text-sm gap-2 font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
@@ -299,7 +302,7 @@ function CreateEvent({ open, onClose }) {
                     </button>
                     <button
                       className="px-4 py-1.5 h-fit text-sm font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleCreate}
+                      onClick={(e) => { handleCreate()}}
                       disabled={
                         isLoading ||
                         !projectName.trim() ||

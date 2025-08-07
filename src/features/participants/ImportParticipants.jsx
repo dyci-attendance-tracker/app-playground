@@ -2,16 +2,15 @@ import React, { useEffect, useState } from "react";
 import { X, FileSpreadsheet } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { useProfiles } from "../../../contexts/ProfilesContext";
-import excelImportExample from '../../../assets/images/excel-import-example.png';
-import { useWorkspace } from "../../../contexts/WorkspaceContext";
-import { useParams } from "react-router";
+import excelImportExample from '../../assets/images/excel-import-example.png';
+import { useParticipants } from "../../contexts/ParticipantsContext";
+import { useWorkspace } from "../../contexts/WorkspaceContext";
 
-function ImportProfiles({ open, onClose }) {
-  const { importProfilesFromExcel } = useProfiles();
+function ImportParticipants({ open, onClose, eventId }) {
+  const {currentWorkspace } = useWorkspace();
+  const { importParticipantsFromExcel } = useParticipants();
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const {workspaceID} = useParams()
 
   useEffect(() => {
     const handleEsc = (e) => e.key === "Escape" && onClose();
@@ -20,18 +19,18 @@ function ImportProfiles({ open, onClose }) {
   }, [open]);
 
   const handleImport = async () => {
-    if (!file) {
-      toast.error("Please select a file first.");
+    if (!file || !eventId) {
+      toast.error("Please select a file and ensure event is loaded.");
       return;
     }
 
     setIsLoading(true);
     try {
-      await importProfilesFromExcel(workspaceID,file);
-      toast.success("Profiles imported successfully!");
+      await importParticipantsFromExcel(workspaceID, file, eventId);
+      toast.success("Participants imported successfully!");
       onClose();
     } catch (error) {
-      toast.error("Failed to import profiles.");
+      toast.error("Failed to import participants.");
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -58,7 +57,7 @@ function ImportProfiles({ open, onClose }) {
           >
             {/* Header */}
             <div className="flex justify-between items-center py-4 border-gray-700">
-              <h2 className="text-xs font-semibold">Import Profiles</h2>
+              <h2 className="text-xs font-semibold">Import Participants</h2>
               <motion.button
                 onClick={(e) => { onClose()}}
                 className="text-gray-400 hover:text-white"
@@ -82,43 +81,42 @@ function ImportProfiles({ open, onClose }) {
                   Upload an Excel (.xlsx) file with the following column headers:
                 </p>
                 <div className="flex w-full justify-center">
-                    <ul className="list-disc list-inside text-xs w-70 lg:w-90">
+                  <ul className="list-disc list-inside text-xs w-70 lg:w-90">
                     <li className="flex justify-between">
-                        <span>Student Number</span>
-                        <span>First Name</span>
+                      <span>Student Number</span>
+                      <span>First Name</span>
                     </li>
                     <li className="flex justify-between">
-                        <span>Last Name</span>
-                        <span>Middle Name</span>
+                      <span>Last Name</span>
+                      <span>Middle Name</span>
                     </li>
                     <li className="flex justify-between">
-                        <span>Email</span>
-                        <span>Phone</span>
+                      <span>Email</span>
+                      <span>Phone</span>
                     </li>
                     <li className="flex justify-between">
-                        <span>College Department</span>
-                        <span>Course</span>
+                      <span>College Department</span>
+                      <span>Course</span>
                     </li>
                     <li className="flex justify-between">
-                        <span>Year Level</span>
-                        <span>Section</span>
+                      <span>Year Level</span>
+                      <span>Section</span>
                     </li>
-                    </ul>
+                  </ul>
                 </div>
-
               </div>
 
-              {/* Placeholder Image */}
+              {/* Sample Preview Image */}
               <div className="w-full bg-gray-800 border border-dashed border-gray-600 rounded p-4 text-center">
                 <p className="text-gray-500 text-sm mb-2">Sample Excel Format Preview</p>
                 <div className="flex justify-center">
-                    <img
+                  <img
                     src={excelImportExample}
                     alt="Excel Format Sample"
                     className="max-w-full sm:max-w-md md:max-w-lg lg:max-w-xl max-h-48 object-contain rounded"
-                    />
+                  />
                 </div>
-               </div>
+              </div>
 
               {/* File Input */}
               <input
@@ -142,7 +140,7 @@ function ImportProfiles({ open, onClose }) {
                 disabled={isLoading || !file}
                 className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? "Importing..." : "Import Profiles"}
+                {isLoading ? "Importing..." : "Import Participants"}
               </button>
             </div>
           </motion.div>
@@ -152,4 +150,4 @@ function ImportProfiles({ open, onClose }) {
   );
 }
 
-export default ImportProfiles;
+export default ImportParticipants;

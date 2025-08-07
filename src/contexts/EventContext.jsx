@@ -7,10 +7,10 @@ import {
   deleteDoc,
   getDocs,
   serverTimestamp,
+  getDoc,
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAuth } from './AuthContext';
-import { useWorkspace } from './WorkspaceContext';
 
 const EventContext = createContext();
 
@@ -18,16 +18,15 @@ export const useEvents = () => useContext(EventContext);
 
 export function EventProvider({ children }) {
   const { currentUser } = useAuth();
-  const { currentWorkspace } = useWorkspace();
 
   const [events, setEvents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchEvents = async () => {
-    if (!currentUser || !currentWorkspace?.id) return;
+  const fetchEvents = async (workspaceID) => {
+    if (!currentUser || !workspaceID) return;
     setIsLoading(true);
     try {
-      const eventsRef = collection(db, 'workspaces', currentWorkspace.id, 'events');
+      const eventsRef = collection(db, 'workspaces', workspaceID, 'events');
       const snapshot = await getDocs(eventsRef);
       const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setEvents(data);
@@ -38,8 +37,38 @@ export function EventProvider({ children }) {
     }
   };
 
-  const createEvent = async (eventData) => {
-    if (!eventData || !currentUser || !currentWorkspace?.id) return;
+  const fetchEventById = async (eventId, workspaceID) => {
+    if (!eventId || !workspaceID) {
+      console.warn("Missing eventId or workspaceID", { eventId, workspaceID });
+      return null;
+    }
+
+    setIsLoading(true);
+    try {
+      console.log(`Fetching event at: workspaces/${workspaceID}/events/${eventId}`);
+
+      const eventDocRef = doc(db, 'workspaces', workspaceID, 'events', eventId);
+      const docSnap = await getDoc(eventDocRef);
+
+      if (docSnap.exists()) {
+        const eventData = { id: docSnap.id, ...docSnap.data() };
+        console.log("Fetched Event Data:", eventData);
+        return eventData;
+      } else {
+        console.warn('No event found with this ID.');
+        return null;
+      }
+    } catch (err) {
+      console.error('Error fetching event by ID:', err);
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
+  const createEvent = async (workspaceID, eventData) => {
+    if (!eventData || !currentUser || !workspaceID) return;
 
     const newEvent = {
       ...eventData,
@@ -53,9 +82,9 @@ export function EventProvider({ children }) {
 
     setIsLoading(true);
     try {
-      const eventsRef = collection(db, 'workspaces', currentWorkspace.id, 'events');
+      const eventsRef = collection(db, 'workspaces', workspaceID, 'events');
       const docRef = await addDoc(eventsRef, newEvent);
-      await fetchEvents();
+      await fetchEvents(workspaceID);
       return docRef.id;
     } catch (err) {
       console.error('Error creating event:', err);
@@ -65,32 +94,32 @@ export function EventProvider({ children }) {
     }
   };
 
-  const updateEvent = async (id, updates) => {
-    if (!id || !updates || !currentWorkspace?.id) return;
+  const updateEvent = async (workspaceID, id, updates) => {
+    if (!id || !updates || !workspaceID) return;
     try {
-      const eventRef = doc(db, 'workspaces', currentWorkspace.id, 'events', id);
+      const eventRef = doc(db, 'workspaces', workspaceID, 'events', id);
       await updateDoc(eventRef, updates);
-      await fetchEvents();
+      await fetchEvents(workspaceID);
     } catch (err) {
       console.error('Error updating event:', err);
       throw err;
     }
   };
 
-  const deleteEvent = async (id) => {
-    if (!id || !currentWorkspace?.id) return;
+  const deleteEvent = async (workspaceID, id) => {
+    if (!id || !workspaceID) return;
     try {
-      const eventRef = doc(db, 'workspaces', currentWorkspace.id, 'events', id);
+      const eventRef = doc(db, 'workspaces', workspaceID, 'events', id);
       await deleteDoc(eventRef);
-      await fetchEvents();
+      await fetchEvents(workspaceID);
     } catch (err) {
       console.error('Error deleting event:', err);
       throw err;
     }
   };
 
-  const duplicateEvent = async (event) => {
-    if (!event || !currentUser || !currentWorkspace?.id) return;
+  const duplicateEvent = async (workspaceID, event) => {
+    if (!event || !currentUser || !workspaceID) return;
 
     const duplicatedEvent = {
         name: `${event.name} (Copy)`,
@@ -100,18 +129,12 @@ export function EventProvider({ children }) {
     };
 
     try {
-        await createEvent(duplicatedEvent);
+        await createEvent(workspaceID,duplicatedEvent);
     } catch (err) {
         console.error('Error duplicating event:', err);
         throw err;
     }
   };
-
-
-  useEffect(() => {
-    fetchEvents();
-    console.log('Events fetched:', events);
-  }, [currentUser, currentWorkspace?.id]);
 
   return (
     <EventContext.Provider
@@ -119,10 +142,11 @@ export function EventProvider({ children }) {
         events,
         isLoading,
         fetchEvents,
+        fetchEventById,
         createEvent,
         updateEvent,
         duplicateEvent,
-        deleteEvent,
+        deleteEvent
       }}
     >
       {children}

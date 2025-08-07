@@ -37,6 +37,9 @@ import { ParticipantsProvider } from './contexts/ParticipantsContext.jsx';
 import { ProfilesProvider } from './contexts/ProfilesContext.jsx';
 import Profiles from './features/profiles/Profiles.jsx';
 import ProfileViewAll from './features/profiles/components/ProfileViewAll.jsx';
+import ProfileView from './features/profiles/components/ProfileView.jsx';
+import AddParticipantPage from './features/public/AddParticipantPage.jsx';
+import PublicCheckInPage from './features/public/PublicCheckInPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -52,15 +55,15 @@ const router = createBrowserRouter([
         element: <SignUp />,
       },
       {
-        path: "attendance-tracker/",
+        path: "/",
         element: <ProtectedRoute><Container /></ProtectedRoute>,
       },
       {
-        path: "attendance-tracker/",
+        path: "/",
         element: <ProtectedRoute><Container /></ProtectedRoute>,
         children: [
           {
-            path: ":workspaceURL",
+            path: ":workspaceID",
             element: <ProtectedRoute><Workspace /></ProtectedRoute>,
             children: [
               {
@@ -72,7 +75,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "attendance-tracker/:workspaceURL/",
+        path: ":workspaceID/",
         element: <ProtectedRoute><Container /></ProtectedRoute>,
         children: [
           {
@@ -96,14 +99,26 @@ const router = createBrowserRouter([
               {
                 path: "all",
                 element: <ProtectedRoute><ProfileViewAll /></ProtectedRoute>
-              }
+              },
+              {
+                path: ":profileID",
+                element: <ProtectedRoute><ProfileView /></ProtectedRoute>
+              },
             ]
           }
         ]
       },
       {
-        path: "attendance-tracker/workspace/create",
+        path: "workspace/create",
         element: <ProtectedRoute><CreateWorkspace /></ProtectedRoute>,
+      },
+      {
+        path: "public/:workspaceID/:eventID/register",
+        element: <AddParticipantPage/>
+      },
+      {
+        path: "public/:workspaceID/:eventID/check-in",
+        element: <PublicCheckInPage />
       },
       {
         path: "*", // Catch-all route (404)

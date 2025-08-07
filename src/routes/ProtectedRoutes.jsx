@@ -27,9 +27,9 @@ export default function ProtectedRoute({ children }) {
     location.pathname.startsWith("/onboarding") &&
     currentUser.onboardingStep >= 4
   ) {
-    const workspacePath = currentUser.workspaceURL
-      ? `/${currentUser.workspaceURL}`
-      : "/attendance-tracker/workspace/create";
+    const workspacePath = currentUser.workspaceID
+      ? `/${currentUser.workspaceID}`
+      : "/workspace/create";
     return <Navigate to={workspacePath} replace />;
   }
 
@@ -45,22 +45,22 @@ export default function ProtectedRoute({ children }) {
 
   // 6️⃣ After onboarding: no workspace URL yet → go to workspace creation
   if (
-    !currentUser.workspaceURL &&
+    !currentUser.workspaceID &&
     currentUser.onboardingStep > 3 &&
-    location.pathname !== "/attendance-tracker/workspace/create"
+    location.pathname !== "/workspace/create"
   ) {
-    return <Navigate to="/attendance-tracker/workspace/create" replace />;
+    return <Navigate to="/workspace/create" replace />;
   }
 
-  // 7️⃣ User has workspaceURL but is not in it
-  const workspacePath = `/${currentUser.workspaceURL}/events`;
+  // 7️⃣ User has workspaceID but is not in it
+  const workspacePath = `/${currentUser.workspaceID}/events`;
   if (
-  currentUser.workspaceURL &&
-  !location.pathname.startsWith(workspacePath) &&
-  location.pathname !== "/attendance-tracker/workspace/create" &&
-  !location.pathname.startsWith("/attendance-tracker/any/events/") &&
-  location.pathname !== "/attendance-tracker/any/events/all" &&
-  !location.pathname.startsWith(`/${currentUser.workspaceURL}/profiles`)
+  currentUser.workspaceID &&
+  !location.pathname.includes(`/${currentUser.workspaceID}/`) &&
+  location.pathname !== "/workspace/create" &&
+  !location.pathname.startsWith("/any/events/") &&
+  location.pathname !== "/any/events/all" &&
+  !location.pathname.startsWith(`/${currentUser.workspaceID}/profiles`)
 ) {
   return <Navigate to={`${workspacePath}/all`} replace />;
 }

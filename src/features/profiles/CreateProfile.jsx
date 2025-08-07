@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { BoxIcon, UserIcon, UserPlus2, X } from 'lucide-react';
+import { BoxIcon, ChevronDown, UserIcon, UserPlus2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from "@material-tailwind/react";
 import { useProfiles } from '../../contexts/ProfilesContext';
 import { toast } from 'sonner';
+import { useWorkspace } from '../../contexts/WorkspaceContext';
+import { useParams } from 'react-router';
+
+const DEPARTMENTS = JSON.parse(import.meta.env.VITE_DEPARTMENTS_JSON || '{}');
+const YEARS = (import.meta.env.VITE_YEARS || '').split(',').map(s => s.trim());
+const SECTIONS = (import.meta.env.VITE_SECTIONS || '').split(',').map(s => s.trim());
 
 function CreateProfile({ open, onClose }) {
     const { createProfile } = useProfiles();
+    const {workspaceID} = useParams()
 
     const FULLNAME_MAX = 100;
 
@@ -49,11 +56,19 @@ function CreateProfile({ open, onClose }) {
       setMiddleName('');
       setEmail('');
       setPhone('');
+      setCollegeDepartment('');
+      setCourse('');
+      setYearLevel('');
+      setSection('');
       setFirstNameError('');
       setLastNameError('');
       setMiddleNameError('');
       setEmailError('');
       setPhoneError('');
+      setCollegeDepartmentError('');
+      setCourseError('');
+      setYearLevelError('');
+      setSectionError('');
       setError('');
     }
   }, [open]);
@@ -139,7 +154,7 @@ function CreateProfile({ open, onClose }) {
 
     setIsLoading(true);
     try {
-      await createProfile({
+      await createProfile(workspaceID,{
         IDNumber,
         firstName,
         lastName,
@@ -155,7 +170,7 @@ function CreateProfile({ open, onClose }) {
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error('Failed to create profile');
+      toast.error(err.message || "Failed to create profile.");
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +184,7 @@ function CreateProfile({ open, onClose }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose}
+          onClick={(e) => { onClose()}}
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
@@ -183,7 +198,7 @@ function CreateProfile({ open, onClose }) {
                 <div className="flex justify-between items-center py-4  border-gray-700">
                     <h2 className="text-xs font-semibold">Create Profile</h2>
                     <motion.button
-                        onClick={onClose}
+                        onClick={(e) => { onClose()}}
                         className="text-gray-400 hover:text-white"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
@@ -199,7 +214,7 @@ function CreateProfile({ open, onClose }) {
                     <h2 className="text-xs font-semibold w-full text-left">Personal Information</h2>
                     {/* ID Number */}
                     <div>
-                        <textarea
+                        <input
                         rows={1}
                         type="text"
                         placeholder="ID Number"
@@ -219,7 +234,7 @@ function CreateProfile({ open, onClose }) {
 
                     {/* First Name */}
                     <div>
-                        <textarea
+                        <input
                         rows={1}
                         type="text"
                         maxLength={FULLNAME_MAX + 1}
@@ -239,7 +254,7 @@ function CreateProfile({ open, onClose }) {
                     
                     {/* Last Name */}
                     <div>
-                        <textarea
+                        <input
                         rows={1}
                         type="text"
                         maxLength={FULLNAME_MAX + 1}
@@ -259,7 +274,7 @@ function CreateProfile({ open, onClose }) {
 
                     {/* Middle Name */}
                     <div>
-                        <textarea
+                        <input
                         rows={1}
                         type="text"
                         maxLength={FULLNAME_MAX + 1}
@@ -279,7 +294,7 @@ function CreateProfile({ open, onClose }) {
 
                     {/* Email & Phone*/}
                     <div className='flex gap-2 items-center justify-between'>
-                        <textarea
+                        <input
                             rows={1}
                             type="email"
                             placeholder="Email"
@@ -295,7 +310,7 @@ function CreateProfile({ open, onClose }) {
                             )}
                         </div>
 
-                        <textarea
+                        <input
                             rows={1}
                             type="text"
                             placeholder="Phone"
@@ -314,66 +329,94 @@ function CreateProfile({ open, onClose }) {
 
                     <h2 className="text-xs font-semibold w-full text-left">Academic Information</h2>
 
-                    {/* College Department */}
-                    <div className='flex gap-2 items-center justify-between'>
-                        <textarea
-                            rows={1}
-                            placeholder="College Department"
-                            className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
-                            value={collegeDepartment}
-                            onChange={(e) => setCollegeDepartment(e.target.value)}
-                        />
-                        {collegeDepartmentError && (
-                            <span className="text-red-500 text-xs">{collegeDepartmentError}</span>
-                        )}
+                    {/* Academic Info */}
+                    <div className="flex flex-col gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 lg:gap-4">
+                        {/* College Department */}
+                        <div className="flex flex-col gap-1">
+                            <label className="text-xs lg:text-sm text-left font-medium text-gray-700">College Department</label>
+                            <div className="relative w-full">
+                                <select
+                                    value={collegeDepartment}
+                                    onChange={(e) => {
+                                    setCollegeDepartment(e.target.value);
+                                    setCourse(""); // reset course when department changes
+                                    }}
+                                    className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-xs lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
+                                >
+                                    <option value="" disabled>Select Department</option>
+                                    {Object.keys(DEPARTMENTS).map((dept) => (
+                                    <option className='text-black' key={dept} value={dept}>{dept}</option>
+                                    ))}
+                                </select>
+                                <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 group-hover:text-blue-500">
+                                    <ChevronDown className="w-4 h-4" />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Course */}
+                        <div className="flex flex-col gap-1">
+                        <label className="text-xs lg:text-sm text-left font-medium text-gray-700">Course</label>
+                        <div className="relative w-full">
+                            <select
+                                value={course}
+                                onChange={(e) => setCourse(e.target.value)}
+                                disabled={!collegeDepartment}
+                                className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-xs lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
+                            >
+                                <option value="" disabled>{collegeDepartment ? "Select Course" : "Select Department first"}</option>
+                                {(DEPARTMENTS[collegeDepartment] || []).map((courseOption) => (
+                                <option className='text-black' key={courseOption} value={courseOption}>{courseOption}</option>
+                                ))}
+                            </select>
+                            <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 group-hover:text-blue-500">
+                                <ChevronDown className="w-4 h-4" />
+                            </div>
+                        </div>
+                        </div>
 
                         {/* Year Level */}
-                        <div>
-                            <textarea
-                                rows={1}
-                                placeholder="Year Level"
-                                className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        <div className="flex flex-col gap-1">
+                        <label className="text-xs lg:text-sm text-left font-medium text-gray-700">Year Level</label>
+                        <div className="relative w-full">
+                            <select
                                 value={yearLevel}
                                 onChange={(e) => setYearLevel(e.target.value)}
-                            />
-                            {yearLevelError && (
-                                <span className="text-red-500 text-xs">{yearLevelError}</span>
-                            )}
+                                className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-xs lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
+                            >
+                                <option value="" disabled>Select Year</option>
+                                {YEARS.map((year) => (
+                                <option className='text-black' key={year} value={year}>{year}</option>
+                                ))}
+                            </select>
+                            <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 group-hover:text-blue-500">
+                                <ChevronDown className="w-4 h-4" />
+                            </div>
                         </div>
-                    </div>
-
-                    {/* Course */}
-                    <div className='flex gap-2 items-center justify-between'>
-                        <textarea
-                            rows={1}
-                            placeholder="Course"
-                            className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
-                            value={course}
-                            onChange={(e) => setCourse(e.target.value)}
-                        />
-                        {courseError && (
-                            <span className="text-red-500 text-xs">{courseError}</span>
-                        )}
+                        </div>
 
                         {/* Section */}
-                        <div>
-                            <textarea
-                                rows={1}
-                                placeholder="Section"
-                                className="w-full overlay mb-0 rounded resize-none text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        <div className="flex flex-col gap-1">
+                        <label className="text-xs lg:text-sm text-left font-medium text-gray-700">Section</label>
+                        <div className="relative w-full">
+                            <select
                                 value={section}
                                 onChange={(e) => setSection(e.target.value)}
-                            />
-                            {sectionError && (
-                                <span className="text-red-500 text-xs">{sectionError}</span>
-                            )}
+                                className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-xs lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
+                            >
+                                <option value="" disabled>Select Section</option>
+                                {SECTIONS.map((sec) => (
+                                <option className='text-black' key={sec} value={sec}>{sec}</option>
+                                ))}
+                            </select>
+                            <div className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 group-hover:text-blue-500">
+                                <ChevronDown className="w-4 h-4" />
+                            </div>
+                        </div>
                         </div>
                     </div>
-
-                    
-
-                    
-
+                    </div>
 
                     {/* Global Error */}
                     {error && (
@@ -383,9 +426,9 @@ function CreateProfile({ open, onClose }) {
                     )}
                 </div>
                 {/* Footer */}
-                <div className="py-4 flex gap-2 border-t border-gray-700 justify-end">
+                <div className="py-4 flex gap-2 border-t border-gray-700 justify-end mt-2">
                     <button
-                        onClick={onClose}
+                        onClick={(e) => { onClose()}}
                         className="px-4 py-1.5 h-fit text-xs gap-2 font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
@@ -394,7 +437,7 @@ function CreateProfile({ open, onClose }) {
                     </button>
                     <button
                       className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                      onClick={handleCreate}
+                      onClick={(e) => { handleCreate}}
                       disabled={
                         isLoading
                       }

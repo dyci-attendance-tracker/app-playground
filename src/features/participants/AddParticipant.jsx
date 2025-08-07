@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { X, UserIcon, UserPlus2, ChevronDown } from 'lucide-react';
+import { BoxIcon, ChevronDown, UserIcon, UserPlus2, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Input } from "@material-tailwind/react";
 import { toast } from 'sonner';
+import { useParticipants } from '../../contexts/ParticipantsContext';
+import useDebounce from '../../hooks/useDebounce';
 import { useProfiles } from '../../contexts/ProfilesContext';
+import { doc } from 'firebase/firestore';
+import { db } from '../../services/firebase';
 import { useWorkspace } from '../../contexts/WorkspaceContext';
 import { useParams } from 'react-router';
 
@@ -10,8 +15,9 @@ const DEPARTMENTS = JSON.parse(import.meta.env.VITE_DEPARTMENTS_JSON || '{}');
 const YEARS = (import.meta.env.VITE_YEARS || '').split(',').map(s => s.trim());
 const SECTIONS = (import.meta.env.VITE_SECTIONS || '').split(',').map(s => s.trim());
 
-function EditProfile({ open, onClose, profile }) {
-    const { updateProfile } = useProfiles();
+function AddParticipant({ open, onClose, eventId  }) {
+    const { addParticipant } = useParticipants();
+    const { createProfile } = useProfiles();
     const {workspaceID} = useParams()
 
     const FULLNAME_MAX = 100;
@@ -22,10 +28,16 @@ function EditProfile({ open, onClose, profile }) {
     const [middleName, setMiddleName] = useState('');
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
+
     const [collegeDepartment, setCollegeDepartment] = useState('');
     const [course, setCourse] = useState('');
     const [yearLevel, setYearLevel] = useState('');
     const [section, setSection] = useState('');
+
+    const [collegeDepartmentError, setCollegeDepartmentError] = useState('');
+    const [courseError, setCourseError] = useState('');
+    const [yearLevelError, setYearLevelError] = useState('');
+    const [sectionError, setSectionError] = useState('');
 
     const [IDNumberError, setIDNumberError] = useState('');
     const [firstNameError, setFirstNameError] = useState('');
@@ -33,52 +45,31 @@ function EditProfile({ open, onClose, profile }) {
     const [middleNameError, setMiddleNameError] = useState('');
     const [emailError, setEmailError] = useState('');
     const [phoneError, setPhoneError] = useState('');
-    const [collegeDepartmentError, setCollegeDepartmentError] = useState('');
-    const [courseError, setCourseError] = useState('');
-    const [yearLevelError, setYearLevelError] = useState('');
-    const [sectionError, setSectionError] = useState('');
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-   useEffect(() => {
-     if (!open) {
-       setFirstName('');
-       setLastName('');
-       setMiddleName('');
-       setEmail('');
-       setPhone('');
-       setCollegeDepartment('');
-       setCourse('');
-       setYearLevel('');
-       setSection('');
-       setFirstNameError('');
-       setLastNameError('');
-       setMiddleNameError('');
-       setEmailError('');
-       setPhoneError('');
-       setCollegeDepartmentError('');
-       setCourseError('');
-       setYearLevelError('');
-       setSectionError('');
-       setError('');
-     }
-   }, [open]);
+    const [matchedProfile, setMatchedProfile] = useState(null);
+    const debouncedID = useDebounce(IDNumber, 500);
+
+    const { findProfileByIDNumber } = useParticipants();
 
     useEffect(() => {
-        if (open && profile) {
-            setIDNumber(profile.IDNumber || '');
-            setFirstName(profile.firstName || '');
-            setLastName(profile.lastName || '');
-            setMiddleName(profile.middleName || '');
-            setEmail(profile.email || '');
-            setPhone(profile.phone || '');
-            setCollegeDepartment(profile.collegeDepartment || '');
-            setCourse(profile.course || '');
-            setYearLevel(profile.yearLevel || '');
-            setSection(profile.section || '');
-        }
-    }, [open, profile]);
+        const fetchProfile = async () => {
+            if (!debouncedID.trim()) {
+                setMatchedProfile(null);
+                return;
+            }
 
+            const profile = await findProfileByIDNumber(workspaceID ,debouncedID);
+            if (profile) {
+                setMatchedProfile(profile);
+            } else {
+                setMatchedProfile(null);
+            }
+        };
+
+        fetchProfile();
+    }, [debouncedID, findProfileByIDNumber]);
 
   useEffect(() => {
     const handleEsc = (e) => e.key === 'Escape' && onClose();
@@ -86,7 +77,32 @@ function EditProfile({ open, onClose, profile }) {
     return () => document.removeEventListener('keydown', handleEsc);
   }, [open]);
 
-    const validateFields = () => {
+  useEffect(() => {
+    if (!open) {
+      setIDNumber('');
+      setFirstName('');
+      setLastName('');
+      setMiddleName('');
+      setEmail('');
+      setPhone('');
+      setCollegeDepartment('');
+      setCourse('');
+      setYearLevel('');
+      setSection('');
+      setFirstNameError('');
+      setLastNameError('');
+      setMiddleNameError('');
+      setEmailError('');
+      setPhoneError('');
+      setCollegeDepartmentError('');
+      setCourseError('');
+      setYearLevelError('');
+      setSectionError('');
+      setError('');
+    }
+  }, [open]);
+
+  const validateFields = () => {
     let isValid = true;
 
     if (firstName.length > FULLNAME_MAX) {
@@ -159,35 +175,64 @@ function EditProfile({ open, onClose, profile }) {
     return isValid;
   };
 
-  const handleUpdate = async () => {
-    if (!validateFields()) return;
-    if (!firstName || !lastName || !email || !phone || !collegeDepartment || !course || !yearLevel || !section) {
-      setError('All fields are required.');
+  const handleAdd = async () => {
+    if (!validateFields()) {
+      setError('Please fix the errors');
       return;
     }
 
     setIsLoading(true);
     try {
-      const updatedProfile = {
-        IDNumber,
-        firstName,
-        lastName,
-        middleName,
-        email,
-        phone,
-        collegeDepartment,
-        course,
-        yearLevel,
-        section
-      };
-
-      await updateProfile(workspaceID,profile.id, updatedProfile);
-      toast.success('Profile updated successfully!');
-      onClose();
+        if (matchedProfile) {
+            await addParticipant(workspaceID ,eventId, matchedProfile.id, {
+                IDNumber,
+                firstName,
+                lastName,
+                middleName,
+                email,
+                phone,
+                collegeDepartment,
+                course,
+                yearLevel,
+                section,
+                status: 'registered'
+            });
+            toast.success('Participant added successfully!');
+            onClose();
+        }else{
+            const newProfileID = await createProfile(workspaceID,{
+                IDNumber,
+                firstName,
+                lastName,
+                middleName,
+                email,
+                phone,
+                collegeDepartment,
+                course,
+                yearLevel,
+                section,
+            })
+            toast.success('Profile created successfully!');
+            
+            await addParticipant(workspaceID, eventId, newProfileID, {
+                IDNumber,
+                firstName,
+                lastName,
+                middleName,
+                email,
+                phone,
+                collegeDepartment,
+                course,
+                yearLevel,
+                section,
+                status: 'registered'
+            });
+            toast.success('Participant added successfully!');
+            onClose();
+        }
     } catch (err) {
-      console.error('Update failed:', err);
-      toast.error(err.message || "Failed to update profile.");
-    //   setError('An error occurred. Please try again.');
+      console.error(err);
+      toast.error(err.message || "Failed to add participant.");
     } finally {
       setIsLoading(false);
     }
@@ -201,7 +246,7 @@ function EditProfile({ open, onClose, profile }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={(e) => {onClose()}}
+          onClick={(e) => { onClose()}}
         >
           <motion.div
             onClick={(e) => e.stopPropagation()}
@@ -212,113 +257,151 @@ function EditProfile({ open, onClose, profile }) {
             className="overlay w-full max-w-2xl rounded-lg border border-gray-700 bg-gray-900 text-color p-6"
           >
             {/* Header */}
-            <div className="flex justify-between items-center py-4  border-gray-700">
-                <h2 className="text-xs font-semibold">Edit Profile</h2>
-                <motion.button
-                    onClick={(e) => {onClose()}}
-                    className="text-gray-400 hover:text-white"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                >
-                    <X size={20} className='hover:bg-gray-700 rounded'/>
-                </motion.button>
-            </div>
-            
-            {/* Body */}
-            <div className="space-y-2 sm:space-y-3 flex-1">
-                {/* Event Icon */}
-                <div className='p-1 bg-gray-700 rounded w-fit'><UserPlus2 size={20} className='text-gray-500'/></div>
-                <h2 className="text-xs font-semibold w-full text-left">Personal Information</h2>
-                {/* ID Number */}
-                <div className='flex flex-col justify-start items-start'>
-                    <input
-                    rows={1}
-                    type="text"
-                    placeholder="ID Number"
-                    className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
-                    value={IDNumber}
-                    disabled
-                    onChange={(e) => {
-                        setIDNumber(e.target.value);
-                    }}
-                    />
-                    <div className="flex justify-between">
-                        {IDNumberError && (
-                        <span className="text-red-500 text-xs">{IDNumberError}</span>
-                        )}
-                    </div>
-                </div>
-
-
-                {/* First Name */}
-                <div className='flex flex-col justify-start items-start'>
-                    <input
-                    rows={1}
-                    type="text"
-                    maxLength={FULLNAME_MAX + 1}
-                    placeholder="First Name"
-                    className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
-                    value={firstName}
-                    onChange={(e) => {
-                        setFirstName(e.target.value);
-                    }}
-                    />
-                    <div className="flex justify-between">
-                        {firstNameError && (
-                        <span className="text-red-500 text-xs">{firstNameError}</span>
-                        )}
-                    </div>
+                <div className="flex justify-between items-center py-4  border-gray-700">
+                    <h2 className="text-xs font-semibold">Add Participant</h2>
+                    <motion.button
+                        onClick={(e) => { onClose()}}
+                        className="text-gray-400 hover:text-white"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                    >
+                        <X size={20} className='hover:bg-gray-700 rounded'/>
+                    </motion.button>
                 </div>
                 
-                {/* Last Name */}
-                <div className='flex flex-col justify-start items-start'>
-                    <input
-                    rows={1}
-                    type="text"
-                    maxLength={FULLNAME_MAX + 1}
-                    placeholder="Last Name"
-                    className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
-                    value={lastName}
-                    onChange={(e) => {
-                        setLastName(e.target.value);
-                    }}
-                    />
-                    <div className="flex justify-between">
-                        {lastNameError && (
-                        <span className="text-red-500 text-xs">{lastNameError}</span>
+                {/* Body */}
+                <div className="space-y-2 sm:space-y-3 flex-1">
+                    {/* Event Icon */}
+                    <div className='p-1 bg-gray-700 rounded w-fit'><UserPlus2 size={20} className='text-gray-500'/></div>
+                    <h2 className="text-xs font-semibold w-full text-left">Personal Information</h2>
+                    {/* ID Number */}
+                    <div className='flex justify-between w-full'>
+                        <textarea
+                        rows={1}
+                        type="text"
+                        placeholder="ID Number"
+                        className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        value={IDNumber}
+                        onChange={(e) => {
+                          setIDNumber(e.target.value);
+                        }}
+                        />
+                        <div className="flex justify-between">
+                          {IDNumberError && (
+                            <span className="text-red-500 text-xs">{IDNumberError}</span>
+                          )}
+                        </div>
+                        {matchedProfile && (
+                        <div className="flex justify-end mb-2">
+                            <button
+                            onClick={(e) => {
+                                
+                                const {
+                                IDNumber,
+                                firstName,
+                                lastName,
+                                middleName,
+                                email,
+                                phone,
+                                collegeDepartment,
+                                course,
+                                yearLevel,
+                                section
+                                } = matchedProfile;
+
+                                setIDNumber(IDNumber || '');
+                                setFirstName(firstName || '');
+                                setLastName(lastName || '');
+                                setMiddleName(middleName || '');
+                                setEmail(email || '');
+                                setPhone(phone || '');
+                                setCollegeDepartment(collegeDepartment || '');
+                                setCourse(course || '');
+                                setYearLevel(yearLevel || '');
+                                setSection(section || '');
+                                toast.success("Profile information filled from existing record.");
+                            }}
+                            className="text-xs px-2 bg-green-600 hover:bg-green-700 rounded text-white whitespace-nowrap"
+                            >
+                            Match found — Autofill?
+                            </button>
+                        </div>
                         )}
                     </div>
-                </div>
 
-                {/* Middle Name */}
-                <div className='flex flex-col justify-start items-start'>
-                    <input
-                    rows={1}
-                    type="text"
-                    maxLength={FULLNAME_MAX + 1}
-                    placeholder="Middle Name"
-                    className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
-                    value={middleName}
-                    onChange={(e) => {
-                        setMiddleName(e.target.value);
-                    }}
-                    />
-                    <div className="flex justify-between">
-                        {middleNameError && (
-                        <span className="text-red-500 text-xs">{middleNameError}</span>
-                        )}
+
+                    {/* First Name */}
+                    <div>
+                        <textarea
+                        rows={1}
+                        type="text"
+                        maxLength={FULLNAME_MAX + 1}
+                        placeholder="First Name"
+                        className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        value={firstName}
+                        disabled={matchedProfile}
+                        onChange={(e) => {
+                          setFirstName(e.target.value);
+                        }}
+                        />
+                        <div className="flex justify-between">
+                          {firstNameError && (
+                            <span className="text-red-500 text-xs">{firstNameError}</span>
+                          )}
+                        </div>
                     </div>
-                </div>
+                    
+                    {/* Last Name */}
+                    <div>
+                        <textarea
+                        rows={1}
+                        type="text"
+                        maxLength={FULLNAME_MAX + 1}
+                        placeholder="Last Name"
+                        className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        value={lastName}
+                        disabled={matchedProfile}
+                        onChange={(e) => {
+                          setLastName(e.target.value);
+                        }}
+                        />
+                        <div className="flex justify-between">
+                          {lastNameError && (
+                            <span className="text-red-500 text-xs">{lastNameError}</span>
+                          )}
+                        </div>
+                    </div>
 
-                {/* Email & Phone*/}
-                <div className='flex gap-2 items-center justify-between'>
-                    <div className='flex flex-col justify-start items-start'>
-                        <input
+                    {/* Middle Name */}
+                    <div>
+                        <textarea
+                        rows={1}
+                        type="text"
+                        maxLength={FULLNAME_MAX + 1}
+                        placeholder="Middle Name"
+                        className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        value={middleName}
+                        disabled={matchedProfile}
+                        onChange={(e) => {
+                          setMiddleName(e.target.value);
+                        }}
+                        />
+                        <div className="flex justify-between">
+                          {middleNameError && (
+                            <span className="text-red-500 text-xs">{middleNameError}</span>
+                          )}
+                        </div>
+                    </div>
+
+                    {/* Email & Phone*/}
+                    <div className='flex gap-2 items-center justify-between'>
+                        <textarea
                             rows={1}
                             type="email"
                             placeholder="Email"
                             className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                             value={email}
+                            disabled={matchedProfile}
                             onChange={(e) => {
                             setEmail(e.target.value);
                             }}
@@ -328,15 +411,14 @@ function EditProfile({ open, onClose, profile }) {
                                 <span className="text-red-500 text-xs">{emailError}</span>
                             )}
                         </div>
-                    </div>
 
-                    <div className='flex flex-col justify-start items-start'>
-                        <input
+                        <textarea
                             rows={1}
                             type="text"
                             placeholder="Phone"
                             className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                             value={phone}
+                            disabled={matchedProfile}
                             onChange={(e) => {
                             setPhone(e.target.value);
                             }}
@@ -347,11 +429,10 @@ function EditProfile({ open, onClose, profile }) {
                             )}
                         </div>
                     </div>
-                </div>
 
-                <h2 className="text-xs font-semibold w-full text-left">Academic Information</h2>
+                    <h2 className="text-xs font-semibold w-full text-left">Academic Information</h2>
 
-                {/* Academic Info */}
+                    {/* Academic Info */}
                   <div className="flex flex-col gap-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 lg:gap-4">
                       {/* College Department */}
@@ -439,33 +520,33 @@ function EditProfile({ open, onClose, profile }) {
                       </div>
                     </div>
                     </div>
-                {/* Global Error */}
-                {error && (
-                    <div className="text-red-500 text-xs text-center p-2 bg-red-500/10 rounded">
-                    {error}
-                    </div>
-                )}
-            </div>
-            {/* Footer */}
-            <div className="py-4 flex gap-2 border-t border-gray-700 justify-end mt-2">
-                <button
-                    onClick={(e) => {onClose()}}
-                    className="px-4 py-1.5 h-fit text-xs gap-2 font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                >
-                    Cancel
-                </button>
-                <button
-                    className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-                    onClick={(e) => { handleUpdate}}
-                    disabled={
-                    isLoading
-                    }
-                >
-                    {isLoading ? 'Updating...' : 'Update Profile'}
-                </button>
-            </div>
+                    {/* Global Error */}
+                    {error && (
+                      <div className="text-red-500 text-xs text-center p-2 bg-red-500/10 rounded">
+                        {error}
+                      </div>
+                    )}
+                </div>
+                {/* Footer */}
+                <div className="py-4 flex gap-2 border-t border-gray-700 justify-end">
+                    <button
+                        onClick={(e) => { onClose()}}
+                        className="px-4 py-1.5 h-fit text-xs gap-2 font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                      className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={(e) => {handleAdd()}}
+                      disabled={
+                        isLoading
+                      }
+                    >
+                      {isLoading ? 'Adding...' : 'Add Participant'}
+                    </button>
+                </div>
           </motion.div>
         </motion.div>
       )}
@@ -473,4 +554,4 @@ function EditProfile({ open, onClose, profile }) {
   );
 }
 
-export default EditProfile;
+export default AddParticipant;

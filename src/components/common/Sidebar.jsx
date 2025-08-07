@@ -7,10 +7,12 @@ import { Box, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, ChevronUpIco
 import { useAuth } from "../../contexts/AuthContext";
 import { useSidebar } from "../../contexts/SidebarContext";
 import { navigatePage, changeWorkspace } from "../../utils/navigation";
+import { useParams } from "react-router";
 
 function Sidebar() {
     const { currentUser, logout } = useAuth();
     const { currentWorkspace, isLoading, workspaces } = useWorkspace();
+    const { workspaceID } = useParams();
 
     const { openMenu, setOpenMenu } = useState();
 
@@ -140,7 +142,7 @@ function Sidebar() {
                                             </div>
                                             {/* Should use all the workspaces that the user is a member of */}
                                             {getAllWorkspacesMemberOf().map((workspace) => (
-                                            <MenuItem className="text-color py-1.5 px-2 text-sm flex gap-2 hover:bg-gray-700" key={workspace.id} onClick={async () => { await changeWorkspace(workspace.url)}}>
+                                            <MenuItem className="text-color py-1.5 px-2 text-sm flex gap-2 hover:bg-gray-700" key={workspace.id} onClick={async () => { await changeWorkspace(workspace.id)}}>
                                                 <div className="py-0.5 px-1 flex items-center  accent-bg text-xs font-bold text-color rounded-sm">
                                                     {getInitials(workspace?.name)}
                                                 </div>
@@ -150,7 +152,7 @@ function Sidebar() {
                                             </MenuItem>
                                             ))}
                                             <div className="h-px my-1 bg-gray-700" />
-                                            <MenuItem className="text-color text-sm py-1.5 px-2 flex items-center justify-between hover:bg-gray-700" onClick={async () => { await navigatePage('/attendance-tracker/workspace/create') }}>Create or join a workspace</MenuItem>
+                                            <MenuItem className="text-color text-sm py-1.5 px-2 flex items-center justify-between hover:bg-gray-700" onClick={async () => { await navigatePage('/workspace/create') }}>Create or join a workspace</MenuItem>
                                         </MenuList>
                                     </Menu>
                                     <MenuItem className="text-color text-sm py-1.5 px-2 flex items-center justify-between hover:bg-gray-700" onClick={logout}>
@@ -184,13 +186,13 @@ function Sidebar() {
                                 <AccordionHeader onClick={() => handleOpen(1)} className="text-xs border-none text-color-secondary hover:bg-gray-700 rounded-md p-1">Workspace</AccordionHeader>
                                 <AccordionBody className={`flex flex-col gap-1 ${openAccordions.includes(1) ? 'block' : 'hidden'}`}>
                                     <div className="flex items-center gap-1 mb-1">
-                                        <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700"  onClick={() => navigatePage(`/${currentWorkspace?.url}/events/all`)}>
+                                        <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700"  onClick={() => navigatePage(`/${workspaceID}/events/all`)}>
                                             <CalendarDays size={16} className="text-color-secondary" />
                                             <p className="text-color text-xs font-semibold">Events</p>
                                         </Button>
                                     </div>
                                    <div className="flex items-center gap-1 mb-1">
-                                        <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700" onClick={() => navigatePage(`/${currentWorkspace?.url}/profiles`) }>
+                                        <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700" onClick={() => navigatePage(`/${workspaceID}/profiles/all`) }>
                                             <UserRoundPen size={16} className="text-color-secondary" />
                                             <p className="text-color text-xs font-semibold">Profiles</p>
                                         </Button>
@@ -198,7 +200,7 @@ function Sidebar() {
                                     <div className="flex items-center gap-1 mb-1">
                                         <Button variant="text" ripple={true} className="flex items-center gap-2 w-full p-2 hover:bg-gray-700">
                                             <Layers2 size={16} className="text-color-secondary" />
-                                            <p className="text-color text-xs font-semibold">Views</p>
+                                            <p className="text-color text-xs font-semibold">Reports</p>
                                         </Button>
                                     </div>
                                     {/* This is more info */}
