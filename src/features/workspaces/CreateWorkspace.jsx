@@ -82,14 +82,14 @@ function CreateWorkspace() {
         <div className='flex items-center gap-1'>
           <CaretLeft size={16} className='text-white cursor-pointer' />
           {currentUser?.workspaceID ? (
-            <a href={`/${currentUser.workspaceID}`} className='text-color-secondary text-xs font-semibold'>Back to Workspace</a>
+            <a href={`/${currentUser.workspaceID}`} className='text-color-secondary text-sm font-semibold'>Back to Workspace</a>
           ) : (
-            <span onClick={logout} className="text-color-secondary text-xs font-semibold cursor-pointer">Logout</span>
+            <span onClick={logout} className="text-color-secondary text-sm font-semibold cursor-pointer">Logout</span>
           )}
         </div>
         <div className='flex flex-col items-end sm:items-start gap-1 ml-auto'>
-          <p className='text-color-secondary text-xs font-semibold'>Logged in as</p>
-          <p className='text-color text-xs font-semibold break-all'>{currentUser?.email}</p>
+          <p className='text-color-secondary text-sm font-semibold'>Logged in as</p>
+          <p className='text-color text-sm font-semibold break-all'>{currentUser?.email}</p>
         </div>
       </div>
 
@@ -113,14 +113,14 @@ function CreateWorkspace() {
                   placeholder='Enter your workspace name'
                   value={workspaceName}
                   onChange={(e) => setWorkspaceName(e.target.value)}
-                  className='secondary border border-gray-700 w-full h-10 px-3 rounded-md text-color-secondary text-xs font-semibold outline-none focus:ring-2 focus:ring-blue-500'
+                  className='secondary border border-gray-700 w-full h-10 px-3 rounded-md text-color-secondary text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500'
                 />
               </div>
 
               <div className='flex flex-col items-start gap-2 w-full mt-4'>
                 <label htmlFor="workspaceID" className='text-color text-sm font-semibold'>Workspace URL</label>
                 <div className='flex items-center w-full'>
-                  <span className='secondary whitespace-nowrap text-color-secondary border border-gray-700 border-r-0 h-10 pl-3 rounded-l-md text-xs font-semibold flex items-center'>
+                  <span className='secondary whitespace-nowrap text-color-secondary border border-gray-700 border-r-0 h-10 pl-3 rounded-l-md text-sm font-semibold flex items-center'>
                     /
                   </span>
                   <input
@@ -129,10 +129,10 @@ function CreateWorkspace() {
                     placeholder='your-workspace-name'
                     value={workspaceID}
                     onChange={(e) => setWorkspaceID(e.target.value.replace(/\s+/g, '-').toLowerCase())}
-                    className='secondary border border-gray-700 border-l-0 w-full h-10 pr-3 rounded-r-md text-color-secondary text-xs font-semibold outline-none'
+                    className='secondary border border-gray-700 border-l-0 w-full h-10 pr-3 rounded-r-md text-color-secondary text-sm font-semibold outline-none'
                   />
                 </div>
-                {error && <p className='error-text text-xs font-medium mt-1'>{error}</p>}
+                {error && <p className='error-text text-sm font-medium mt-1'>{error}</p>}
               </div>
 
               <div className='flex flex-col items-start gap-2 w-full mt-4'>

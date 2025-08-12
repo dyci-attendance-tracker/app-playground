@@ -66,7 +66,7 @@ export default function ParticipantFilterButton({
           className="flex items-center text-sm font-semibold justify-between px-4 py-1 hover:bg-gray-700 gap-2 text-color rounded-lg"
         >
           <ListFilter size={16} className="text-color-secondary" />
-          <Typography className="text-xs font-semibold text-color">Filter</Typography>
+          <Typography className="text-sm lg:text-xs font-semibold text-color">Filter</Typography>
         </Button>
       </MenuHandler>
 
@@ -224,7 +224,7 @@ export default function ParticipantFilterButton({
           <Typography className="text-sm font-semibold text-color">
             Clear Filters
           </Typography>
-          <span className="text-xs text-color-secondary ml-2">Esc</span>
+          <span className="text-sm text-color-secondary ml-2">Esc</span>
         </MenuItem>
       </MenuList>
     </Menu>

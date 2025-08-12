@@ -136,10 +136,10 @@ export default function EventActionsMenu({ selectedEvent }) {
             <Button
             variant="text"
             size="sm"
-            className="flex items-center text-sm font-semibold justify-between px-4 py-1 hover:bg-gray-700 gap-2 text-color rounded-lg"
+            className="flex items-center text-xs font-semibold justify-between px-4 py-1 hover:bg-gray-700 gap-2 text-color rounded-lg"
             >
             <SlidersHorizontal size={16} className="text-color-secondary" />
-            <Typography className="overflow-hidden text-ellipsis whitespace-nowrap text-xs font-semibold text-color">
+            <Typography className="overflow-hidden text-ellipsis whitespace-nowrap text-sm lg:text-xs font-semibold text-color">
                 Actions
             </Typography>
             </Button>
@@ -459,7 +459,7 @@ export default function EventActionsMenu({ selectedEvent }) {
                             className="rounded-md"
                         />
                     </div>
-                        <Typography className="text-xs text-gray-400 leading-snug">
+                        <Typography className="text-sm text-gray-400 leading-snug">
                             Share this registration link or QR code with participants so they can sign up for the event.
                             You can post this in group chats, announcement boards, or print the QR code for on-site scanning.
                         </Typography>
@@ -544,7 +544,7 @@ export default function EventActionsMenu({ selectedEvent }) {
                             />
                         </div>
 
-                        <Typography className="text-xs text-gray-400 leading-snug">
+                        <Typography className="text-sm text-gray-400 leading-snug">
                             This QR code lets participants check themselves in. Post it near event entrances
                             or on slides for easy scanning. Students must scan their ID for validation.
                         </Typography>

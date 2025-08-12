@@ -152,13 +152,13 @@ function Events() {
                 <button className="hidden lg:block text-color-secondary hover:text-color" onClick={() => setIsLeftSidebarOpen(prev => !prev)}>
                   <PanelRight size={16} />
                 </button>
-                <Typography className='text-color text-xs font-semibold'>Events</Typography>
+                <Typography className='text-color text-sm lg:text-xs font-semibold'>Events</Typography>
                 <Chip
                   variant="ghost"
                   value={
                     <span className="flex items-center gap-1">
                       <Box size={16} className="text-color-secondary" />
-                      <Typography className='text-color text-xs font-semibold'>All Events</Typography>
+                      <Typography className='text-color text-sm lg:text-xs font-semibold'>All Events</Typography>
                     </span>
                   }
                   className="bg-gray-700 text-color px-2 py-1 hidden sm:block rounded-md cursor-pointer hover:bg-gray-600"
@@ -168,19 +168,19 @@ function Events() {
               <div className='flex items-center gap-2'>
                 <CopyLinkButton />
 
-                {selectedEvent && (<Button className='flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-xs font-semibold hover:bg-gray-600' onClick={() => setOpenImportModal(true)}>
+                {selectedEvent && (<Button className='flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-sm font-semibold hover:bg-gray-600' onClick={() => setOpenImportModal(true)}>
                     <Upload size={16} className='text-color-secondary' />
-                    <Typography className='sm:block hidden text-xs'>Import Participants</Typography>
+                    <Typography className='sm:block hidden text-sm lg:text-xs'>Import Participants</Typography>
                 </Button>)}
                 
-                {selectedEvent && (<Button className='flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-xs font-semibold hover:bg-gray-600' onClick={() => setOpenAddParticipantModal(true)}>
+                {selectedEvent && (<Button className='flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-sm font-semibold hover:bg-gray-600' onClick={() => setOpenAddParticipantModal(true)}>
                   <UserPlus2 size={16} className='text-color-secondary' />
-                  <Typography className='sm:block hidden text-xs'>Add Participant</Typography>
+                  <Typography className='sm:block hidden text-sm lg:text-xs'>Add Participant</Typography>
                 </Button>)}
 
-                <Button className='flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-xs font-semibold hover:bg-gray-600' onClick={() => setOpenModal(true)}>
+                <Button className='flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-sm font-semibold hover:bg-gray-600' onClick={() => setOpenModal(true)}>
                   <Plus size={16} className='text-color-secondary' />
-                  <Typography className='sm:block hidden text-xs'>Add Event</Typography>
+                  <Typography className='sm:block hidden text-sm lg:text-xs'>Add Event</Typography>
                 </Button>
               </div>
             </div>
@@ -194,7 +194,7 @@ function Events() {
                   {filterChips.map((chip, index) => (
                     <div
                       key={index}
-                      className="flex-shrink-0 flex items-center gap-1 bg-gray-700 text-color px-2 py-1 rounded-md text-xs cursor-pointer hover:bg-gray-600"
+                      className="flex-shrink-0 flex items-center gap-1 bg-gray-700 text-color px-2 py-1 rounded-md text-sm cursor-pointer hover:bg-gray-600"
                     >
                       <span className="truncate">{chip.label}</span>
                       <button onClick={chip.onRemove}>
@@ -225,7 +225,7 @@ function Events() {
                         setSearchQuery(e.target.value);
                         setCurrentPage(1);
                         }}
-                        className="pl-10 w-full px-3 py-1.5 rounded-md secondary border border-gray-700 text-xs text-color placeholder:text-gray-500 focus:outline-none"
+                        className="pl-10 w-full px-3 py-1.5 rounded-md secondary border border-gray-700 text-sm lg:text-xs text-color placeholder:text-gray-500 focus:outline-none"
                     />
                     </div>
                 )}
@@ -242,7 +242,7 @@ function Events() {
                         setSearchQuery(e.target.value);
                         setCurrentPage(1);
                     }}
-                    className="pl-10 w-full px-3 py-1.5 rounded-md secondary border border-gray-700 text-xs text-color placeholder:text-gray-500 focus:outline-none"
+                    className="pl-10 w-full px-3 py-1.5 rounded-md secondary border border-gray-700 text-sm text-color placeholder:text-gray-500 focus:outline-none"
                     />
                 </div>)}
 
@@ -253,7 +253,7 @@ function Events() {
                           {filterChips.map((chip, index) => (
                             <div
                               key={index}
-                              className="flex items-center gap-1 bg-gray-700 text-color px-2 py-1 rounded-md text-xs cursor-pointer hover:bg-gray-600"
+                              className="flex items-center gap-1 bg-gray-700 text-color px-2 py-1 rounded-md text-sm cursor-pointer hover:bg-gray-600"
                             >
                               <span className='truncate'>{chip.label}</span>
                               <button onClick={chip.onRemove}>
@@ -261,7 +261,7 @@ function Events() {
                               </button>
                             </div>
                           ))}
-                          {/* <Typography className='text-color text-xs font-semibold'>Filter:</Typography> */}
+                          {/* <Typography className='text-color text-sm font-semibold'>Filter:</Typography> */}
                         </div>
                         <ParticipantFilterButton
                           selectedDepartment={selectedDepartment}
@@ -297,13 +297,13 @@ function Events() {
           {/* Pagination */}
           <div className="flex w-full mt-auto justify-between items-center gap-2 py-4 lg:px-6 px-4 text-sm text-color-secondary border-t border-gray-700">
             <div className="flex gap-1 items-center">
-              <Typography className='text-color text-xs font-semibold hidden sm:inline'>Page</Typography>
-              <Typography className='text-color text-xs font-semibold'>{currentPage} of {totalPages}</Typography>
+              <Typography className='text-color text-sm lg:text-xs font-semibold hidden sm:inline'>Page</Typography>
+              <Typography className='text-color text-sm lg:text-xs font-semibold'>{currentPage} of {totalPages}</Typography>
             </div>
             <div className={`flex gap-2 sm:gap-4 items-center`}>
-               <Typography className="text-xs font-semibold text-color-secondary w-full text-right">Participant Count: {filteredParticipants.length}</Typography>
+               {eventID && <Typography className="text-sm lg:text-xs font-semibold text-color-secondary w-full text-right">Participant Count: {filteredParticipants.length}</Typography>}
               <div className="flex gap-1 items-center">
-                <span className="hidden sm:inline text-xs text-color-secondary">Show</span>
+                <span className="hidden sm:inline text-sm lg:text-xs text-color-secondary">Show</span>
                 <select
                   value={itemsPerPage}
                   onChange={(e) => {
@@ -317,19 +317,19 @@ function Events() {
                   <option value={15}>15</option>
                   <option value={20}>20</option>
                 </select>
-                <span className="hidden sm:inline text-xs text-color-secondary">entries</span>
+                <span className="hidden sm:inline text-sm lg:text-xs text-color-secondary">entries</span>
               </div>
               <button
                 onClick={(e) => { handlePageChange(currentPage - 1)}}
                 disabled={currentPage === 1}
-                className="bg-gray-700 text-color px-3 py-2 text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
+                className="bg-gray-700 text-color px-3 py-2 text-sm lg:text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
               >
                 Prev
               </button>
               <button
                 onClick={(e) => { handlePageChange(currentPage + 1)}}
                 disabled={currentPage === totalPages || currentPage > totalPages}
-                className="bg-gray-700 text-color px-3 py-2 text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
+                className="bg-gray-700 text-color px-3 py-2 text-sm lg:text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
               >
                 Next
               </button>

@@ -200,7 +200,7 @@ function CreateEvent({ open, onClose }) {
                         />
                         <div className="flex justify-between">
                           {titleError && (
-                            <span className="text-red-500 text-xs">{titleError}</span>
+                            <span className="text-red-500 text-sm">{titleError}</span>
                           )}
                         </div>
                     </div>
@@ -220,7 +220,7 @@ function CreateEvent({ open, onClose }) {
                         />
                         <div className="flex justify-between">
                           {summaryError && (
-                            <span className="text-red-500 text-xs">{summaryError}</span>
+                            <span className="text-red-500 text-sm">{summaryError}</span>
                           )}
                         </div>
                     </div>
@@ -251,7 +251,7 @@ function CreateEvent({ open, onClose }) {
                       />
 
                       {eventDateError && (
-                        <span className="text-red-500 text-xs mt-1 flex justify-end">
+                        <span className="text-red-500 text-sm mt-1 flex justify-end">
                           {eventDateError}
                         </span>
                       )}
@@ -273,9 +273,9 @@ function CreateEvent({ open, onClose }) {
                         />
                         <div className="flex justify-between mt-1">
                           {descriptionError && (
-                            <span className="text-red-500 text-xs">{descriptionError}</span>
+                            <span className="text-red-500 text-sm">{descriptionError}</span>
                           )}
-                          <span className={`text-xs ml-auto ${
+                          <span className={`text-sm ml-auto ${
                             description.length > DESCRIPTION_MAX ? 'text-red-500' : 'text-gray-500'
                           }`}>
                             {description.length}/{DESCRIPTION_MAX}

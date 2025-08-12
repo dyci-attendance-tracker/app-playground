@@ -59,7 +59,7 @@ function ImportProfiles({ open, onClose }) {
           >
             {/* Header */}
             <div className="flex justify-between items-center py-4 border-gray-700">
-              <h2 className="text-xs font-semibold">Import Profiles</h2>
+              <h2 className="text-sm font-semibold">Import Profiles</h2>
               <motion.button
                 onClick={(e) => { onClose()}}
                 className="text-gray-400 hover:text-white"
@@ -83,7 +83,7 @@ function ImportProfiles({ open, onClose }) {
                   Upload an Excel (.xlsx) file with the following column headers:
                 </p>
                 <div className="flex w-full justify-center">
-                    <ul className="list-disc list-inside text-xs w-70 lg:w-90">
+                    <ul className="list-disc list-inside text-sm w-70 lg:w-90">
                     <li className="flex justify-between">
                         <span>Student Number</span>
                         <span>First Name</span>
@@ -126,7 +126,7 @@ function ImportProfiles({ open, onClose }) {
                 type="file"
                 accept=".xlsx, .xls"
                 onChange={(e) => setFile(e.target.files[0])}
-                className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-xs text-gray-300"
+                className="w-full bg-gray-800 border border-gray-700 rounded p-2 text-sm text-gray-300"
               />
             </div>
 
@@ -134,14 +134,14 @@ function ImportProfiles({ open, onClose }) {
             <div className="py-4 flex gap-2 border-t border-gray-700 justify-end">
               <button
                 onClick={(e) => { onClose()}}
-                className="px-4 py-1.5 h-fit text-xs font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
+                className="px-4 py-1.5 h-fit text-sm font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={(e) => { handleImport()}}
                 disabled={isLoading || !file}
-                className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-1.5 h-fit text-sm font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "Importing..." : "Import Profiles"}
               </button>

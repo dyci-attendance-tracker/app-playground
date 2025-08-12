@@ -72,7 +72,7 @@ export default function Login() {
             <h1 className="text-color text-xl font-medium mb-2">
               Welcome to Attendance Tracker
             </h1>
-            <p className="text-color text-xs text-gray-500">
+            <p className="text-color text-sm text-gray-500">
               To get started, please sign in
             </p>
           </div>
@@ -96,7 +96,7 @@ export default function Login() {
               <div className="w-full border-t border-gray-300"></div>
             </div>
             <div className="relative flex justify-center">
-              <span className="primary text-color px-3 bg-white text-gray-500 text-xs">or</span>
+              <span className="primary text-color px-3 bg-white text-gray-500 text-sm">or</span>
             </div>
           </div>
 
@@ -122,7 +122,7 @@ export default function Login() {
                 />
               </div>
               {!isValidEmail && formData.email && (
-                <p className="mt-1 text-left text-xs error-text">Please enter a valid email</p>
+                <p className="mt-1 text-left text-sm error-text">Please enter a valid email</p>
               )}
             </div>
 
