@@ -17,7 +17,7 @@ function CopyLinkButton() {
 
   return (
     <Tooltip
-        className="primary border border-gray-700 text-xs text-color "
+        className="primary border border-gray-700 text-sm text-color "
         animate={{
             mount: { scale: 1, y: 0 },
             unmount: { scale: 0, y: -25 },
@@ -25,7 +25,7 @@ function CopyLinkButton() {
         }}
         content={
         <div className="flex items-center gap-3">
-          <Typography color="blue-gray" className="text-xs font-medium">
+          <Typography color="blue-gray" className="text-sm font-medium">
             Copy View URL
           </Typography>
           <div className='flex items-center'>
@@ -38,7 +38,7 @@ function CopyLinkButton() {
     >
         <Button
           onClick={handleCopy}
-          className="p-1 bg-transparent text-color text-xs font-semibold cursor-pointer hover:bg-gray-600"
+          className="p-1 bg-transparent text-color text-sm font-semibold cursor-pointer hover:bg-gray-600"
         >
           <Link size={16} className="text-color-secondary" />
         </Button>

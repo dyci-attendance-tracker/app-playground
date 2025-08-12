@@ -18,7 +18,7 @@ function AddParticipantPage() {
     const { workspaceID, eventID } = useParams();
 
     const { fetchEventById } = useEvents();
-    const { addParticipant, findProfileByIDNumber } = useParticipants();
+    const { addParticipant, findProfileByIDNumber, fetchParticipants } = useParticipants();
     const { createProfile } = useProfiles();
 
     const [event, setEvent] = useState();
@@ -153,7 +153,7 @@ function AddParticipantPage() {
 
 
     const handleCreateParticipant = async () => {
-        if (!IDNumber || !firstName || !lastName || !email || !phone || !collegeDepartment || !course || !yearLevel || !section) {
+        if (!IDNumber || !firstName || !lastName || !email || !collegeDepartment || !course || !yearLevel || !section) {
             setError('Please fill in all required fields.');
             return;
         }
@@ -162,10 +162,28 @@ function AddParticipantPage() {
 
         setIsLoading(true);
         try {
-            let profileId = matchedProfile?.id;
+            if (matchedProfile) {
 
-            if (!matchedProfile) {
-                profileId = await createProfile(workspaceID,{
+                if (matchedProfile.IDNumber !== IDNumber){
+                    await addParticipant(workspaceID ,eventID, matchedProfile.id, {
+                        IDNumber,
+                        firstName,
+                        lastName,
+                        middleName,
+                        email,
+                        phone,
+                        collegeDepartment,
+                        course,
+                        yearLevel,
+                        section,
+                        status: 'registered'
+                    });
+                    toast.success('Participant added successfully!');
+                }else{
+                    toast.info('Participant already registered');
+                }
+            }else{
+                const newProfileID = await createProfile(workspaceID,{
                     IDNumber,
                     firstName,
                     lastName,
@@ -175,29 +193,29 @@ function AddParticipantPage() {
                     collegeDepartment,
                     course,
                     yearLevel,
-                    section
+                    section,
+                })
+                toast.success('Profile created successfully!');
+                
+                await addParticipant(workspaceID, eventID, newProfileID, {
+                    IDNumber,
+                    firstName,
+                    lastName,
+                    middleName,
+                    email,
+                    phone,
+                    collegeDepartment,
+                    course,
+                    yearLevel,
+                    section,
+                    status: 'registered'
                 });
-                toast.success('Profile created successfully.');
+                toast.success('Participant added successfully!');
+                fetchParticipants(workspaceID);
             }
-
-            await addParticipant(workspaceID, eventID, profileId, {
-                IDNumber,
-                firstName,
-                lastName,
-                middleName,
-                email,
-                phone,
-                collegeDepartment,
-                course,
-                yearLevel,
-                section,
-                status: 'registered'
-            });
-
-            toast.success('Participant added successfully.');
         } catch (err) {
             console.error(err);
-            toast.error('Failed to add participant.');
+            toast.error(err.message || "Failed to add participant.");
         } finally {
             setIsLoading(false);
         }
@@ -207,7 +225,7 @@ function AddParticipantPage() {
         <div className='flex flex-col h-[100vh] overflow-y-auto primary px-4 sm:px-10 py-2'>
             <div className='flex flex-col sm:flex-row justify-end items-start sm:items-center px-4 sm:px-10 py-3 w-full h-auto mb-4 gap-4 sm:gap-0'>
                 <div className='absolute top-5 right-5 lg:top-10 lg:right-10 flex flex-col items-end sm:items-start gap-1 ml-auto'>
-                    <p className='text-color-secondary text-xs font-semibold'>Logged in as <span className='text-color text-xs font-semibold break-all'>Guest</span></p>
+                    <p className='text-color-secondary text-sm font-semibold'>Logged in as <span className='text-color text-sm font-semibold break-all'>Guest</span></p>
                 </div>
             </div>
             {/* Body */}
@@ -228,7 +246,7 @@ function AddParticipantPage() {
                             <form className="flex flex-col gap-6 p-4 sm:p-6" onSubmit={(e) => e.preventDefault()}>
                                 {/* ID Number */}
                                 <div className="flex flex-col gap-1">
-                                    <label className="text-sm text-left font-medium text-gray-700">ID Number</label>
+                                    <label className="text-sm text-left font-medium text-gray-700">ID Number *</label>
                                     <input
                                     type="text"
                                     placeholder="e.g., 2023-00001"
@@ -241,7 +259,7 @@ function AddParticipantPage() {
                                 {/* Name */}
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                     <div className="flex flex-col gap-1">
-                                    <label className="text-sm text-left font-medium text-gray-700">First Name</label>
+                                    <label className="text-sm text-left font-medium text-gray-700">First Name * </label>
                                     <input
                                         type="text"
                                         className="rounded border border-gray-700 px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -250,7 +268,7 @@ function AddParticipantPage() {
                                     />
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                    <label className="text-sm text-left font-medium text-gray-700">Last Name</label>
+                                    <label className="text-sm text-left font-medium text-gray-700">Last Name *</label>
                                     <input
                                         type="text"
                                         className="rounded border border-gray-700 px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -272,7 +290,7 @@ function AddParticipantPage() {
                                 {/* Contact Info */}
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="flex flex-col gap-1">
-                                    <label className="text-sm text-left font-medium text-gray-700">Email</label>
+                                    <label className="text-sm text-left font-medium text-gray-700">Email *</label>
                                     <input
                                         type="email"
                                         className="rounded border border-gray-700 px-3 py-2 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -298,7 +316,7 @@ function AddParticipantPage() {
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {/* College Department */}
                                     <div className="flex flex-col gap-1">
-                                        <label className="text-sm text-left font-medium text-gray-700">College Department</label>
+                                        <label className="text-sm text-left font-medium text-gray-700">College Department *</label>
                                         <div className="relative w-full">
                                             <select
                                                 value={collegeDepartment}
@@ -321,7 +339,7 @@ function AddParticipantPage() {
 
                                     {/* Course */}
                                     <div className="flex flex-col gap-1">
-                                    <label className="text-sm text-left font-medium text-gray-700">Course</label>
+                                    <label className="text-sm text-left font-medium text-gray-700">Course *</label>
                                     <div className="relative w-full">
                                         <select
                                             value={course}
@@ -342,7 +360,7 @@ function AddParticipantPage() {
 
                                     {/* Year Level */}
                                     <div className="flex flex-col gap-1">
-                                    <label className="text-sm text-left font-medium text-gray-700">Year Level</label>
+                                    <label className="text-sm text-left font-medium text-gray-700">Year Level *</label>
                                     <div className="relative w-full">
                                         <select
                                             value={yearLevel}
@@ -362,7 +380,7 @@ function AddParticipantPage() {
 
                                     {/* Section */}
                                     <div className="flex flex-col gap-1">
-                                    <label className="text-sm text-left font-medium text-gray-700">Section</label>
+                                    <label className="text-sm text-left font-medium text-gray-700">Section *</label>
                                     <div className="relative w-full">
                                         <select
                                             value={section}
@@ -384,7 +402,7 @@ function AddParticipantPage() {
 
                                 {/* Error */}
                                 {error && (
-                                    <p className="text-red-500 text-xs">{error}</p>
+                                    <p className="text-red-500 text-sm">{error}</p>
                                 )}
                                 </form>
 

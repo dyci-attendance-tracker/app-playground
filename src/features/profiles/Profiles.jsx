@@ -83,13 +83,13 @@ function Profiles() {
                     <button className="hidden lg:block text-color-secondary hover:text-color" onClick={() => setIsLeftSidebarOpen(prev => !prev)}>
                     <PanelRight size={16} />
                     </button>
-                    <Typography className="text-color text-xs font-semibold">Profiles</Typography>
+                    <Typography className="text-color text-sm lg:text-xs font-semibold">Profiles</Typography>
                     <Chip
                     variant="ghost"
                     value={
                         <span className="flex items-center gap-1">
                         <Box size={16} className="text-color-secondary" />
-                        <Typography className="text-color text-xs font-semibold">All Profiles</Typography>
+                        <Typography className="text-color text-sm lg:text-xs font-semibold">All Profiles</Typography>
                         </span>
                     }
                     className="bg-gray-700 text-color px-2 py-1 hidden sm:block rounded-md cursor-pointer hover:bg-gray-600"
@@ -99,12 +99,12 @@ function Profiles() {
                 <div className="flex items-center gap-2">
                     <CopyLinkButton />
 
-                    <Button className="flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-xs font-semibold hover:bg-gray-600" onClick={() => setOpenImportModal(true)}>
-                        <Upload size={16} className="text-color-secondary" /> <Typography className="hidden sm:block text-xs">Import Profiles</Typography>
+                    <Button className="flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-sm lg:text-xs font-semibold hover:bg-gray-600" onClick={() => setOpenImportModal(true)}>
+                        <Upload size={16} className="text-color-secondary" /> <Typography className="hidden sm:block text-sm">Import Profiles</Typography>
                     </Button>
 
-                    <Button className="flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-xs font-semibold hover:bg-gray-600" onClick={() => setOpenModal(true)}>
-                        <Plus size={16} className="text-color-secondary" /> <Typography className="hidden sm:block text-xs">Add Profile</Typography>
+                    <Button className="flex bg-gray-700 gap-1 items-center px-2 py-1 text-color text-sm lg:text-xs font-semibold hover:bg-gray-600" onClick={() => setOpenModal(true)}>
+                        <Plus size={16} className="text-color-secondary" /> <Typography className="hidden sm:block text-sm">Add Profile</Typography>
                     </Button>
                 </div>
                 </div>
@@ -125,7 +125,7 @@ function Profiles() {
                             setSearchQuery(e.target.value);
                             setCurrentPage(1);
                         }}
-                        className="pl-10 w-full px-3 py-1.5 rounded-md secondary border border-gray-700 text-xs text-color placeholder:text-gray-500 focus:outline-none"
+                        className="pl-10 w-full px-3 py-1.5 rounded-md secondary border border-gray-700 text-sm lg:text-xs text-color placeholder:text-gray-500 focus:outline-none"
                         />
                     </div>)}
                     <ParticipantFilterButton></ParticipantFilterButton>
@@ -147,11 +147,11 @@ function Profiles() {
             </div>
 
             {/* Pagination */}
-            <div className="flex w-full mt-auto justify-between items-center gap-2 py-4 lg:px-6 px-4 text-sm text-color-secondary border-t border-gray-700">
-                <Typography className="text-color text-xs font-semibold">Page {currentPage} of {totalPages}</Typography>
+            <div className="flex w-full mt-auto justify-between items-center gap-2 py-4 lg:px-6 px-4 text-sm lg:text-xs text-color-secondary border-t border-gray-700">
+                <Typography className="text-color text-sm lg:text-xs font-semibold">Page {currentPage} of {totalPages}</Typography>
                 <div className="flex gap-4 items-center">
                 <div className="flex gap-1 items-center">
-                    <span className="text-xs text-color-secondary">Show</span>
+                    <span className="text-sm lg:text-xs text-color-secondary">Show</span>
                     <select
                     value={itemsPerPage}
                     onChange={(e) => {
@@ -165,19 +165,19 @@ function Profiles() {
                     <option value={15}>15</option>
                     <option value={20}>20</option>
                     </select>
-                    <span className="text-xs text-color-secondary">entries</span>
+                    <span className="text-sm lg:text-xs text-color-secondary">entries</span>
                 </div>
                 <button
                     onClick={(e) => {  handlePageChange(currentPage - 1)}}
                     disabled={currentPage === 1}
-                    className="bg-gray-700 text-color px-3 py-2 text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
+                    className="bg-gray-700 text-color px-3 py-2 text-sm lg:text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
                 >
                     Prev
                 </button>
                 <button
                     onClick={(e) => {  handlePageChange(currentPage + 1)}}
                     disabled={currentPage === totalPages || currentPage > totalPages}
-                    className="bg-gray-700 text-color px-3 py-2 text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
+                    className="bg-gray-700 text-color px-3 py-2 text-sm lg:text-xs font-semibold rounded-md hover:bg-gray-600 disabled:opacity-50"
                 >
                     Next
                 </button>

@@ -28,7 +28,7 @@ function ProfileViewAll() {
           <div className="w-full overflow-x-auto hide-scrollbar">
             <div className="min-w-[1000px]">
               {/* Table Header */}
-              <div className="grid grid-cols-[20px_2.5fr_4fr_4fr_3fr_3.5fr_3.5fr_2.5fr] text-left gap-4 px-4 py-2 text-xs font-semibold text-color-secondary border-b border-gray-700">
+              <div className="grid grid-cols-[20px_2.5fr_4fr_4fr_3fr_3.5fr_3.5fr_2.5fr] text-left gap-4 px-4 py-2 text-sm font-semibold text-color-secondary border-b border-gray-700">
                 <span></span>
                 <span>#</span>
                 <span>Full Name</span>
@@ -37,7 +37,6 @@ function ProfileViewAll() {
                 <span>Department</span>
                 <span>Course</span>
                 <span>Year & Section</span>
-                <span className="text-center pr-4">Options</span>
               </div>
 
               {/* Table Body */}

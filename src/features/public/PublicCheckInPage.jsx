@@ -177,14 +177,14 @@
     return (
         <div className='flex flex-col h-[100vh] overflow-y-auto primary px-4 sm:px-10 py-2'>
         <div className='flex justify-between items-center px-4 sm:px-10 py-3 w-full'>
-            <p className="text-xs text-gray-400">
+            <p className="text-sm text-gray-400">
                 Status: {isOnline ? (
                     <span className="text-green-400 font-bold">Online</span>
                 ) : (
                     <span className="text-red-400 font-bold">Offline</span>
                 )}
             </p>
-            <p className='text-xs text-gray-400 font-semibold'>You are logged in as <span className='text-color'>Guest</span></p>
+            <p className='text-sm text-gray-400 font-semibold'>You are logged in as <span className='text-color'>Guest</span></p>
         </div>
 
         <div className='flex justify-center items-center w-full px-4 sm:px-10 h-full'>
@@ -224,11 +224,11 @@
             )} */}
 
 
-            <p className='text-gray-400 text-xs max-w-md text-center mt-4'>
+            <p className='text-gray-400 text-sm max-w-md text-center mt-4'>
                 Note: Once a participant has checked in, their status will be marked as attended. Duplicate scans will not count.
             </p>
 
-            <p className='text-color-secondary text-xs max-w-md text-center mt-4'>
+            <p className='text-color-secondary text-sm max-w-md text-center mt-4'>
                 Developed by: Franc Alvenn Dela Cruz
             </p>
             </div>

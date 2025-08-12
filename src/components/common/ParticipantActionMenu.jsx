@@ -64,7 +64,7 @@ export default function ParticipantActionMenu({ selectedParticipant }) {
             className="flex items-center text-sm font-semibold justify-between px-4 py-1 hover:bg-gray-700 gap-2 text-color rounded-lg"
           >
             <SlidersHorizontal size={16} className="text-color-secondary" />
-            <Typography className="text-xs font-semibold text-color">
+            <Typography className="text-sm lg:text-xs font-semibold text-color">
               Actions
             </Typography>
           </Button>

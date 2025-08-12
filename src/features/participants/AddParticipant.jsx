@@ -129,15 +129,15 @@ function AddParticipant({ open, onClose, eventId  }) {
       setEmailError('');
     }
 
-    if (!phone.trim()) {
-      setPhoneError('Phone number is required');
-      isValid = false;
-    } else if (!/^\d{11}$/.test(phone)) {
-      setPhoneError('Invalid phone number format');
-      isValid = false;
-    } else {
-      setPhoneError('');
-    }
+    // if (!phone.trim()) {
+    //   // setPhoneError('Phone number is required');
+    //   // isValid = false;
+    // } else if (!/^\d{11}$/.test(phone)) {
+    //   setPhoneError('Invalid phone number format');
+    //   isValid = false;
+    // } else {
+    //   setPhoneError('');
+    // }
 
     if (!collegeDepartment.trim()) {
         setCollegeDepartmentError('Department is required');
@@ -176,6 +176,12 @@ function AddParticipant({ open, onClose, eventId  }) {
   };
 
   const handleAdd = async () => {
+
+    if (!IDNumber || !firstName || !lastName || !email || !collegeDepartment || !course || !yearLevel || !section) {
+            setError('Please fill in all required fields.');
+            return;
+        }
+
     if (!validateFields()) {
       setError('Please fix the errors');
       return;
@@ -259,7 +265,7 @@ function AddParticipant({ open, onClose, eventId  }) {
           >
             {/* Header */}
                 <div className="flex justify-between items-center py-4  border-gray-700">
-                    <h2 className="text-xs font-semibold">Add Participant</h2>
+                    <h2 className="text-sm font-semibold">Add Participant</h2>
                     <motion.button
                         onClick={(e) => { onClose()}}
                         className="text-gray-400 hover:text-white"
@@ -274,14 +280,14 @@ function AddParticipant({ open, onClose, eventId  }) {
                 <div className="space-y-2 sm:space-y-3 flex-1">
                     {/* Event Icon */}
                     <div className='p-1 bg-gray-700 rounded w-fit'><UserPlus2 size={20} className='text-gray-500'/></div>
-                    <h2 className="text-xs font-semibold w-full text-left">Personal Information</h2>
+                    <h2 className="text-sm font-semibold w-full text-left">Personal Information</h2>
                     {/* ID Number */}
                     <div className='flex justify-between w-full'>
                         <textarea
                         rows={1}
                         type="text"
                         placeholder="ID Number"
-                        className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        className="w-full overlay mb-0 rounded resize-none  text-color text-sm sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                         value={IDNumber}
                         onChange={(e) => {
                           setIDNumber(e.target.value);
@@ -289,7 +295,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                         />
                         <div className="flex justify-between">
                           {IDNumberError && (
-                            <span className="text-red-500 text-xs">{IDNumberError}</span>
+                            <span className="text-red-500 text-sm">{IDNumberError}</span>
                           )}
                         </div>
                         {matchedProfile && (
@@ -322,7 +328,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                                 setSection(section || '');
                                 toast.success("Profile information filled from existing record.");
                             }}
-                            className="text-xs px-2 bg-green-600 hover:bg-green-700 rounded text-white whitespace-nowrap"
+                            className="text-sm px-2 bg-green-600 hover:bg-green-700 rounded text-white whitespace-nowrap"
                             >
                             Match found — Autofill?
                             </button>
@@ -338,7 +344,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                         type="text"
                         maxLength={FULLNAME_MAX + 1}
                         placeholder="First Name"
-                        className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        className="w-full overlay mb-0 rounded resize-none  text-color text-sm sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                         value={firstName}
                         disabled={matchedProfile}
                         onChange={(e) => {
@@ -347,7 +353,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                         />
                         <div className="flex justify-between">
                           {firstNameError && (
-                            <span className="text-red-500 text-xs">{firstNameError}</span>
+                            <span className="text-red-500 text-sm">{firstNameError}</span>
                           )}
                         </div>
                     </div>
@@ -359,7 +365,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                         type="text"
                         maxLength={FULLNAME_MAX + 1}
                         placeholder="Last Name"
-                        className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        className="w-full overlay mb-0 rounded resize-none  text-color text-sm sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                         value={lastName}
                         disabled={matchedProfile}
                         onChange={(e) => {
@@ -368,7 +374,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                         />
                         <div className="flex justify-between">
                           {lastNameError && (
-                            <span className="text-red-500 text-xs">{lastNameError}</span>
+                            <span className="text-red-500 text-sm">{lastNameError}</span>
                           )}
                         </div>
                     </div>
@@ -380,7 +386,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                         type="text"
                         maxLength={FULLNAME_MAX + 1}
                         placeholder="Middle Name"
-                        className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                        className="w-full overlay mb-0 rounded resize-none  text-color text-sm sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                         value={middleName}
                         disabled={matchedProfile}
                         onChange={(e) => {
@@ -389,7 +395,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                         />
                         <div className="flex justify-between">
                           {middleNameError && (
-                            <span className="text-red-500 text-xs">{middleNameError}</span>
+                            <span className="text-red-500 text-sm">{middleNameError}</span>
                           )}
                         </div>
                     </div>
@@ -400,7 +406,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                             rows={1}
                             type="email"
                             placeholder="Email"
-                            className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                            className="w-full overlay mb-0 rounded resize-none  text-color text-sm sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                             value={email}
                             disabled={matchedProfile}
                             onChange={(e) => {
@@ -409,7 +415,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                         />
                         <div className="flex justify-between">
                             {emailError && (
-                                <span className="text-red-500 text-xs">{emailError}</span>
+                                <span className="text-red-500 text-sm">{emailError}</span>
                             )}
                         </div>
 
@@ -417,7 +423,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                             rows={1}
                             type="text"
                             placeholder="Phone"
-                            className="w-full overlay mb-0 rounded resize-none  text-color text-xs sm:text-lg placeholder-gray-500 border-none focus:outline-none"
+                            className="w-full overlay mb-0 rounded resize-none  text-color text-sm sm:text-lg placeholder-gray-500 border-none focus:outline-none"
                             value={phone}
                             disabled={matchedProfile}
                             onChange={(e) => {
@@ -426,19 +432,19 @@ function AddParticipant({ open, onClose, eventId  }) {
                         />
                         <div className="flex justify-between">
                             {phoneError && (
-                                <span className="text-red-500 text-xs">{phoneError}</span>
+                                <span className="text-red-500 text-sm">{phoneError}</span>
                             )}
                         </div>
                     </div>
 
-                    <h2 className="text-xs font-semibold w-full text-left">Academic Information</h2>
+                    <h2 className="text-sm font-semibold w-full text-left">Academic Information</h2>
 
                     {/* Academic Info */}
                   <div className="flex flex-col gap-2">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 lg:gap-4">
                       {/* College Department */}
                       <div className="flex flex-col gap-1">
-                          <label className="text-xs lg:text-sm text-left font-medium text-gray-700">College Department</label>
+                          <label className="text-sm lg:text-sm text-left font-medium text-gray-700">College Department</label>
                           <div className="relative w-full">
                               <select
                                   value={collegeDepartment}
@@ -446,7 +452,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                                   setCollegeDepartment(e.target.value);
                                   setCourse(""); // reset course when department changes
                                   }}
-                                  className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-xs lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
+                                  className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-sm lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
                               >
                                   <option value="" disabled>Select Department</option>
                                   {Object.keys(DEPARTMENTS).map((dept) => (
@@ -461,13 +467,13 @@ function AddParticipant({ open, onClose, eventId  }) {
 
                       {/* Course */}
                       <div className="flex flex-col gap-1">
-                      <label className="text-xs lg:text-sm text-left font-medium text-gray-700">Course</label>
+                      <label className="text-sm lg:text-sm text-left font-medium text-gray-700">Course</label>
                       <div className="relative w-full">
                           <select
                               value={course}
                               onChange={(e) => setCourse(e.target.value)}
                               disabled={!collegeDepartment}
-                              className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-xs lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
+                              className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-sm lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
                           >
                               <option value="" disabled>{collegeDepartment ? "Select Course" : "Select Department first"}</option>
                               {(DEPARTMENTS[collegeDepartment] || []).map((courseOption) => (
@@ -482,12 +488,12 @@ function AddParticipant({ open, onClose, eventId  }) {
 
                       {/* Year Level */}
                       <div className="flex flex-col gap-1">
-                      <label className="text-xs lg:text-sm text-left font-medium text-gray-700">Year Level</label>
+                      <label className="text-sm lg:text-sm text-left font-medium text-gray-700">Year Level</label>
                       <div className="relative w-full">
                           <select
                               value={yearLevel}
                               onChange={(e) => setYearLevel(e.target.value)}
-                              className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-xs lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
+                              className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-sm lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
                           >
                               <option value="" disabled>Select Year</option>
                               {YEARS.map((year) => (
@@ -502,12 +508,12 @@ function AddParticipant({ open, onClose, eventId  }) {
 
                       {/* Section */}
                       <div className="flex flex-col gap-1">
-                      <label className="text-xs lg:text-sm text-left font-medium text-gray-700">Section</label>
+                      <label className="text-sm lg:text-sm text-left font-medium text-gray-700">Section</label>
                       <div className="relative w-full">
                           <select
                               value={section}
                               onChange={(e) => setSection(e.target.value)}
-                              className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-xs lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
+                              className="appearance-none w-full rounded border border-gray-700 px-3 py-2 pr-10 text-sm lg:text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400"
                           >
                               <option value="" disabled>Select Section</option>
                               {SECTIONS.map((sec) => (
@@ -523,7 +529,7 @@ function AddParticipant({ open, onClose, eventId  }) {
                     </div>
                     {/* Global Error */}
                     {error && (
-                      <div className="text-red-500 text-xs text-center p-2 bg-red-500/10 rounded">
+                      <div className="text-red-500 text-sm text-center p-2 bg-red-500/10 rounded">
                         {error}
                       </div>
                     )}
@@ -532,14 +538,14 @@ function AddParticipant({ open, onClose, eventId  }) {
                 <div className="py-4 flex gap-2 border-t border-gray-700 justify-end">
                     <button
                         onClick={(e) => { onClose()}}
-                        className="px-4 py-1.5 h-fit text-xs gap-2 font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
+                        className="px-4 py-1.5 h-fit text-sm gap-2 font-medium text-gray-300 hover:text-white bg-gray-800 hover:bg-gray-700 rounded"
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}
                     >
                         Cancel
                     </button>
                     <button
-                      className="px-4 py-1.5 h-fit text-xs font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-4 py-1.5 h-fit text-sm font-medium text-white accent-bg hover:bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={(e) => {handleAdd()}}
                       disabled={
                         isLoading

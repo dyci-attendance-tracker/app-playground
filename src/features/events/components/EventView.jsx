@@ -42,22 +42,22 @@ function EventView() {
   }
 
   return (
-    <div className="h-full flex flex-col justify-between relative rounded-lg transition-all duration-300">
-      <div className="flex-1 primary lg:p-4 p-3 flex flex-col gap-4">
+    <div className="h-full flex flex-col relative rounded-lg transition-all duration-300">
+      <div className="primary lg:p-4 p-3 flex flex-col gap-4 mb-2">
         <div className='flex items-center gap-3'>
           <BoxIcon size={24} className="text-gray-500" />
           <div className="flex-1 text-left w-full pr-3">
             <Typography className="text-lg font-semibold text-color break-words whitespace-pre-wrap">{event.name}</Typography>
-            <Typography className="text-xs text-color-secondary">Date: {dayjs(event.date).format('MM DD, YYYY')}</Typography>
+            <Typography className="text-sm text-color-secondary">Date: {dayjs(event.date).format('MM DD, YYYY')}</Typography>
           </div>
         </div>
         <div className="flex flex-col gap-4 items-center lg:pl-2 pl-3">
           <span className="flex flex-col gap-0 items-center justify-start w-full">
-            <Typography className='text-xs text-color-secondary text-left w-full'>Summary</Typography>
+            <Typography className='text-sm text-color-secondary text-left w-full'>Summary</Typography>
             <Typography className="text-sm text-color text-left w-full break-words whitespace-pre-wrap">{event.summary}</Typography>
           </span>
           <span className="flex flex-col gap-0 items-center justify-start w-full">
-            <Typography className='text-xs text-color-secondary text-left w-full'>Description</Typography>
+            <Typography className='text-sm text-color-secondary text-left w-full'>Description</Typography>
             <Typography className="text-sm text-color text-left w-full break-words whitespace-pre-wrap">{event.description}</Typography>
           </span>
         </div>
